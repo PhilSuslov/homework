@@ -3,7 +3,7 @@ package main
 import (
 	"sync"
 	"time"
-	""
+	"github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 )
 
 const (
@@ -14,13 +14,24 @@ const (
 
 type OrderStorage struct{
 	mu sync.RWMutex
-	Orders map[string]OrderDto
+	Orders map[string]*orderV1.OrderDto
 }
 
 func NewOrderStorage() *OrderStorage{
 	return &OrderStorage{
-		Orders: make(map[string]*),
+		Orders: make(map[string]*orderV1.OrderDto),
 	}
+}
+
+func (o *OrderStorage) GetOrderByUUID(uuid string) *orderV1.OrderDto{
+	o.mu.RLock()
+	defer o.mu.RUnlock()
+
+	order,ok := o.Orders[uuid]
+	if !ok{
+		return nil
+	}
+	return order
 }
 
 func main(){

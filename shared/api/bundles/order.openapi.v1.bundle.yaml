@@ -348,3 +348,4 @@ x-ogen:
   target: ./pkg/openapi/order/v1
   package: order_v1
   clean: true
+  client: true

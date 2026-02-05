@@ -1,4 +1,4 @@
-module shared
+module github.com/PhilSuslov/homework/shared
 
 go 1.25.2
 
