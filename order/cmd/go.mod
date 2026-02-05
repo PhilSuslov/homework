@@ -1,4 +1,4 @@
-module order
+module github.com/PhilSuslov/homework/order/cmd
 
 go 1.25.2
 
