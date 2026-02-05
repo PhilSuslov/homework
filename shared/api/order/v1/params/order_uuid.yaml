@@ -1,0 +1,8 @@
+name: order_uuid
+in: path
+required: true
+description: UUID пользователя, для которого запрашиваются или обновляются данные
+schema:
+  type: string
+  format: uuid
+  example: 0886799f-5898-4236-93e8-ba41f239d825

@@ -1,0 +1,43 @@
+type: object
+required:
+  - order_uuid
+  - user_uuid
+  - part_uuids
+  - total_price
+  # - transaction_uuid
+  # - payment_method
+  - status
+properties:
+  order_uuid :
+    type: string
+    format: uuid
+    description: Уникальный идентификатор заказа
+    example: 0886799f-5898-4236-93e8-ba41f239d825
+  user_uuid:
+    type: string
+    format: uuid
+    description: UUID пользователя
+    example: 0886799f-5898-4236-93e8-ba41f239d825
+  part_uuids:
+    type: array
+    items:
+      type: string
+      format: uuid
+      description: Список UUID деталей
+      example: 0886799f-5898-4236-93e8-ba41f239d825
+  total_price:
+    type: number
+    format: double
+    description: Итоговая стоимость
+    example: 1554.21
+  transaction_uuid:
+    type: string
+    nullable: true
+    description: UUID транзакции (если оплачен)
+    example: 0886799f-5898-4236-93e8-ba41f239d825
+  payment_method:
+    $ref: ./enums/payment_method.yaml
+    nullable: true
+  status:
+    $ref: ./enums/order_status.yaml
+    nullable: true

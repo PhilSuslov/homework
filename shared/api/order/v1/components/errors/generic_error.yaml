@@ -1,0 +1,9 @@
+type: object
+properties:
+  code:
+    type: integer
+    description: HTTP-код ошибки
+    example: 404
+  message:
+    type: string
+    description: Описание ошибки
