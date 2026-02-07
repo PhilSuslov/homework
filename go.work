@@ -3,4 +3,6 @@
  use (
  ./inventory/cmd
  ./order/cmd
+ ./shared
+ ./payment/cmd
  )
