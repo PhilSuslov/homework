@@ -5,12 +5,14 @@ package order_v1
 import (
 	"net/http"
 	"net/url"
+	"log"
 	"strings"
 
 	"github.com/ogen-go/ogen/uri"
 )
 
 func (s *Server) cutPrefix(path string) (string, bool) {
+	
 	prefix := s.cfg.Prefix
 	if prefix == "" {
 		return path, true
@@ -36,6 +38,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	elem, ok := s.cutPrefix(elem)
+	log.Printf("OGEN ServeHTTP: elem after cutPrefix='%s'", elem)
 	if !ok || len(elem) == 0 {
 		s.notFound(w, r)
 		return
@@ -49,9 +52,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/order/"
+		case '/': // Prefix: "/api/v1/orders"
 
-			if l := len("/api/v1/order/"); len(elem) >= l && elem[0:l] == "/api/v1/order/" {
+			if l := len("/api/v1/orders"); len(elem) >= l && elem[0:l] == "/api/v1/orders" {
 				elem = elem[l:]
 			} else {
 				break
@@ -215,6 +218,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 			}
 		}()
+		log.Printf("FindPath: method=%s, elem='%s'", method, elem)
 	}
 
 	elem, ok := s.cutPrefix(elem)

@@ -22,9 +22,9 @@ import (
 )
 
 const (
-	httpPort          = "8080"
+	httpPort = "8080"
 	// readHeaderTimeout = 5 * time.Second
-	shutdownTimeout   = 10 * time.Second
+	shutdownTimeout = 10 * time.Second
 )
 
 type OrderService struct {
@@ -46,13 +46,14 @@ func NewOrderService(
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+	log.Printf("CreateOrder called, req: %+v", request)
 
 	if request.UserUUID == uuid.Nil || len(request.UserUUID) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "user_uuid and part_uuid are required")
+		return &orderV1.CreateOrderResponse{}, status.Error(codes.InvalidArgument, "user_uuid and part_uuid are required")
 	}
 
 	strUUID := make([]string, len(request.PartUuids))
-	for i,v := range request.PartUuids{
+	for i, v := range request.PartUuids {
 		strUUID[i] = v.String()
 	}
 
@@ -63,12 +64,12 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 		},
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "inventory error: %v", err)
+		return &orderV1.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error: %v", err)
 	}
 
 	// 2. Проверяем, что все детали найдены
 	if len(partsResp.Parts) != len(request.PartUuids) {
-		return nil, status.Error(codes.NotFound, "some parts not found")
+		return &orderV1.CreateOrderResponse{}, status.Error(codes.NotFound, "some parts not found")
 	}
 
 	// 3. Считаем цену
@@ -223,7 +224,18 @@ func (s *OrderService) NewError(ctx context.Context, err error) *orderV1.Generic
 	}
 }
 
+type loggingResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (lrw *loggingResponseWriter) WriteHeader(code int) {
+	lrw.statusCode = code
+	lrw.ResponseWriter.WriteHeader(code)
+}
+
 func main() {
+
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -256,20 +268,35 @@ func main() {
 
 	// ---------------- OGEN server ----------------
 
-// 	ogenServer, err := orderV1.NewServer(orderService)
-// 	if err != nil {
-// 		log.Fatalf("failed to create ogen server: %v", err)
-// 	}
-// 
-
 	ogenServer, err := orderV1.NewServer(orderService)
 	if err != nil {
 		log.Fatalf("failed to create ogen server: %v", err)
 	}
 
+	// 	ops := []string{"/api/v1/orders/", "/api/v1/order", "/api/v1/orders"}
+	// 	mtd := []string{"POST", "GET", "DELETE", "PUT"}
+	// 	for _, op := range ops {
+	// 		for _, mt := range mtd{
+	// 			if _, ok := ogenServer.FindRoute(mt, op); ok {
+	// 				fmt.Printf("%s %s\n", mt, op)
+	//
+	// 			} else {
+	// 				fmt.Println(mt, op, "Не нашел")
+	// 			}
+	// 		}
+	// 	}
+
 	httpServer := &http.Server{
-		Addr:    ":" + httpPort,
-		Handler: ogenServer, // <- здесь всё верно
+		Addr: ":" + httpPort,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("REQUEST: %s %s — вход в OGEN", r.Method, r.URL.Path)
+
+			// Создаем обертку ResponseWriter, чтобы логировать статус-код
+			lrw := &loggingResponseWriter{ResponseWriter: w, statusCode: 200}
+			ogenServer.ServeHTTP(lrw, r)
+
+			log.Printf("REQUEST: %s %s — обработан OGEN с кодом %d", r.Method, r.URL.Path, lrw.statusCode)
+		}),
 	}
 
 	// ---------------- Run HTTP server ----------------
