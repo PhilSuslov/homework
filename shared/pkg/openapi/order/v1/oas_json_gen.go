@@ -828,7 +828,7 @@ func (o OptNilString) Encode(e *jx.Encoder) {
 		e.Null()
 		return
 	}
-	e.Str(string(o.Value))
+	e.Str(o.Value.String())
 }
 
 // Decode decodes string from json.
@@ -841,7 +841,7 @@ func (o *OptNilString) Decode(d *jx.Decoder) error {
 			return err
 		}
 
-		var v string
+		var v uuid.UUID
 		o.Value = v
 		o.Set = true
 		o.Null = true
@@ -853,7 +853,7 @@ func (o *OptNilString) Decode(d *jx.Decoder) error {
 	if err != nil {
 		return err
 	}
-	o.Value = string(v)
+	o.Value, _ = uuid.Parse(v)
 	return nil
 }
 
@@ -953,7 +953,7 @@ func (s *OrderDto) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("user_uuid")
-		json.EncodeUUID(e, s.UserUUID)
+		json.EncodeUUID(e, s.OrderUUID)
 	}
 	{
 		e.FieldStart("part_uuids")

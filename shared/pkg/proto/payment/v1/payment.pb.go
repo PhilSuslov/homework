@@ -12,13 +12,14 @@ import (
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-)
 
-const (
-	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
-	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+
+// const (
+// 	// Verify that this generated code is sufficiently up-to-date.
+// 	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+// 	// Verify that runtime/protoimpl is sufficiently up-to-date.
+// 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+// )
 )
 
 // Доступные способы оплаты
@@ -176,7 +177,7 @@ func (*PayOrderResponse) Descriptor() ([]byte, []int) {
 	return file_payment_v1_payment_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PayOrderResponse) GetTransactionUuid() string {
+func (x *PayOrderResponse) GetTransactionUuid() string  {
 	if x != nil {
 		return x.TransactionUuid
 	}

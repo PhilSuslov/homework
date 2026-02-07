@@ -95,7 +95,7 @@ func (s *CreateOrderRequest) GetUserUUID() uuid.UUID {
 }
 
 // GetPartUuids returns the value of PartUuids.
-func (s *CreateOrderRequest) GetPartUuids() []uuid.UUID {
+func (s *CreateOrderRequest) GetPartUuids() []uuid.UUID{
 	return s.PartUuids
 }
 
@@ -116,6 +116,8 @@ type CreateOrderResponse struct {
 	// Итоговая стоимость.
 	TotalPrice float64 `json:"total_price"`
 }
+
+func (s * CreateOrderResponse) cancelOrderRes() {}
 
 // GetOrderUUID returns the value of OrderUUID.
 func (s *CreateOrderResponse) GetOrderUUID() uuid.UUID {
@@ -304,7 +306,7 @@ func (o OptInt) Or(d int) int {
 }
 
 // NewOptNilString returns new OptNilString with value set to v.
-func NewOptNilString(v string) OptNilString {
+func NewOptNilString(v uuid.UUID) OptNilString {
 	return OptNilString{
 		Value: v,
 		Set:   true,
@@ -313,7 +315,7 @@ func NewOptNilString(v string) OptNilString {
 
 // OptNilString is optional nullable string.
 type OptNilString struct {
-	Value string
+	Value uuid.UUID
 	Set   bool
 	Null  bool
 }
@@ -323,14 +325,14 @@ func (o OptNilString) IsSet() bool { return o.Set }
 
 // Reset unsets value.
 func (o *OptNilString) Reset() {
-	var v string
+	var v uuid.UUID
 	o.Value = v
 	o.Set = false
 	o.Null = false
 }
 
 // SetTo sets value to v.
-func (o *OptNilString) SetTo(v string) {
+func (o *OptNilString) SetTo(v uuid.UUID) {
 	o.Set = true
 	o.Null = false
 	o.Value = v
@@ -343,12 +345,12 @@ func (o OptNilString) IsNull() bool { return o.Null }
 func (o *OptNilString) SetToNull() {
 	o.Set = true
 	o.Null = true
-	var v string
+	var v uuid.UUID
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptNilString) Get() (v string, ok bool) {
+func (o OptNilString) Get() (v uuid.UUID, ok bool) {
 	if o.Null {
 		return v, false
 	}
@@ -359,7 +361,7 @@ func (o OptNilString) Get() (v string, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptNilString) Or(d string) string {
+func (o OptNilString) Or(d uuid.UUID) uuid.UUID {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -479,7 +481,7 @@ func (s *OrderDto) GetOrderUUID() uuid.UUID {
 }
 
 // GetUserUUID returns the value of UserUUID.
-func (s *OrderDto) GetUserUUID() uuid.UUID {
+func (s *OrderDto) GetUserUUID() uuid.UUID{
 	return s.UserUUID
 }
 
@@ -597,6 +599,7 @@ func (s *OrderStatus) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/pay_order_request
 type PayOrderRequest struct {
+	OrderUUID uuid.UUID `json:"order_uuid"`
 	PaymentMethod PaymentMethod `json:"payment_method"`
 }
 

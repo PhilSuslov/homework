@@ -7,7 +7,7 @@ tags:
   - name: Orders
     description: Операции с заказами — получение и обновлен
 paths:
-  /api/v1/order/:
+  /api/v1/orders/:
     post:
       summary: Create Order
       operationId: CreateOrder
@@ -348,4 +348,4 @@ x-ogen:
   target: ./pkg/openapi/order/v1
   package: order_v1
   clean: true
-  client: true
+  embed: true

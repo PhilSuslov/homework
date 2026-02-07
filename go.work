@@ -1,8 +1,8 @@
- go 1.25.2
+go 1.25.2
 
- use (
- ./inventory/cmd
- ./order/cmd
- ./shared
- ./payment/cmd
- )
+use (
+	./inventory
+	./order
+	./payment
+	./shared
+)
