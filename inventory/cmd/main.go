@@ -28,6 +28,7 @@ func NewInventoryService() *InventoryService {
 	service.parts[id.String()] = &pb.Part{
 		Uuid: id.String(),
 		Name: "Main Engine",
+		Price: 1445.31,
 		Category: pb.Category_CATEGORY_ENGINE,
 		Manufacturer: &pb.Manufacturer{Country: "German"},
 		Tags: []string{"main", "engine"},

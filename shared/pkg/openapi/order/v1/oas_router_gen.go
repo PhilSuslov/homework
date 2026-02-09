@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) cutPrefix(path string) (string, bool) {
-	
+
 	prefix := s.cfg.Prefix
 	if prefix == "" {
 		return path, true
@@ -29,6 +29,7 @@ func (s *Server) cutPrefix(path string) (string, bool) {
 // calling handler that matches the path or returning not found error.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	elem := r.URL.Path
+	log.Printf("Log is ServeHTTP. elem=%v", elem)
 	elemIsEscaped := false
 	if rawPath := r.URL.RawPath; rawPath != "" {
 		if normalized, ok := uri.NormalizeEscapedPath(rawPath); ok {
@@ -52,14 +53,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/orders"
+		case '/': // Prefix: "/api/v1/order"
 
-			if l := len("/api/v1/orders"); len(elem) >= l && elem[0:l] == "/api/v1/orders" {
+			if l := len("/api/v1/order"); len(elem) >= l && elem[0:l] == "/api/v1/order" {
 				elem = elem[l:]
+				 if len(elem) > 0 && elem[0] == '/' {
+				 	elem = elem[1:]
+				 }
 			} else {
 				break
 			}
-
 			if len(elem) == 0 {
 				switch r.Method {
 				case "POST":
@@ -95,6 +98,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			case '/': // Prefix: "/"
 
 				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+					log.Printf("elem: %v", elem)
 					elem = elem[l:]
 				} else {
 					break
@@ -135,6 +139,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					if len(elem) == 0 {
+						log.Println("Попали в логику оплаты")
 						// Leaf node.
 						switch r.Method {
 						case "POST":

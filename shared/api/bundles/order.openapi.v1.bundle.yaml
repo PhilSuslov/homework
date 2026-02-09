@@ -7,7 +7,7 @@ tags:
   - name: Orders
     description: Операции с заказами — получение и обновлен
 paths:
-  /api/v1/orders/:
+  /api/v1/order/:
     post:
       summary: Create Order
       operationId: CreateOrder
@@ -44,7 +44,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/generic_error'
-  /api/v1/order/{order_uuid}:
+  /api/v1/order/{order_uuid}/:
     get:
       summary: Get order by UUID
       operationId: GetOrderByUUID

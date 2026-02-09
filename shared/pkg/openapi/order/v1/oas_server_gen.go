@@ -18,7 +18,7 @@ type Handler interface {
 	//
 	// Create Order.
 	//
-	// POST /api/v1/orders
+	// POST /api/v1/order
 	CreateOrder(ctx context.Context, req *CreateOrderRequest) (CreateOrderRes, error)
 	// GetOrderByUUID implements GetOrderByUUID operation.
 	//

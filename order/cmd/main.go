@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"bytes"
+	"io"
 	"time"
 
 	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
@@ -64,19 +66,25 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 		},
 	})
 	if err != nil {
+		log.Printf("Inventory ListParts error: %v", err)
 		return &orderV1.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error: %v", err)
 	}
 
+	log.Printf("Inventory ListParts response: %+v", partsResp)
+
 	// 2. Проверяем, что все детали найдены
 	if len(partsResp.Parts) != len(request.PartUuids) {
+		log.Printf("Not all parts found: expected=%d, got=%d", len(request.PartUuids), len(partsResp.Parts))
 		return &orderV1.CreateOrderResponse{}, status.Error(codes.NotFound, "some parts not found")
 	}
 
 	// 3. Считаем цену
 	var total_price float64
 	for _, p := range partsResp.Parts {
+		log.Printf("Part: UUID=%s, Price=%f", p.Uuid, p.Price)
 		total_price += p.Price
 	}
+	log.Printf("Total price calculated: %f", total_price)
 
 	orderUUID := uuid.New()
 
@@ -90,6 +98,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 
 	s.mu.Lock()
 	s.orders[orderUUID.String()] = order
+	log.Printf("Order saved: UUID=%s, map keys: %v", order.OrderUUID.String(), s.orders)
 	defer s.mu.Unlock()
 
 	return &orderV1.CreateOrderResponse{
@@ -105,9 +114,10 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 
 func (s *OrderService) PayOrder(ctx context.Context,
 	request *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
-
+	log.Println(params)
+	
 	s.mu.Lock()
-	order, ok := s.orders[request.OrderUUID.String()]
+	order, ok := s.orders[params.OrderUUID.String()]
 	if !ok {
 		s.mu.Unlock()
 		return nil, status.Error(codes.NotFound, "order not found")
@@ -123,6 +133,7 @@ func (s *OrderService) PayOrder(ctx context.Context,
 		return nil, status.Error(codes.Canceled, "order cancelled")
 	}
 
+	// log.Println("+++++++++++++++++++++++++++++")
 	s.mu.Unlock()
 
 	//Проверка метода оплаты
@@ -139,6 +150,7 @@ func (s *OrderService) PayOrder(ctx context.Context,
 	default:
 		pm = 0
 	}
+
 	// Вызываем PaymentService
 	payResp, err := s.paymentClient.PayOrder(ctx, &paymentV1.PayOrderRequest{
 		OrderUuid:     request.OrderUUID.String(),
@@ -148,7 +160,6 @@ func (s *OrderService) PayOrder(ctx context.Context,
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "payment error: %v", err)
 	}
-
 	transactionUUID := payResp.TransactionUuid
 	paymentMethod := request.PaymentMethod
 
@@ -158,6 +169,7 @@ func (s *OrderService) PayOrder(ctx context.Context,
 	order.Status = orderV1.OrderStatusPAID
 	order.TransactionUUID.Value = transactionuuid
 	order.PaymentMethod.Value = paymentMethod
+	log.Println("=== Статус оплаты должен быть ===", s.orders)
 	s.mu.Unlock()
 
 	resp := &orderV1.PayOrderResponse{TransactionUUID: transactionuuid}
@@ -173,9 +185,12 @@ func (s *OrderService) PayOrder(ctx context.Context,
 func (s *OrderService) GetOrderByUUID(ctx context.Context, params orderV1.GetOrderByUUIDParams) (orderV1.GetOrderByUUIDRes, error) {
 	s.mu.Lock()
 	order, ok := s.orders[params.OrderUUID.String()]
+	// log.Printf("GetOrderByUUID called: looking for %s, found: %v", params.OrderUUID.String(), ok)
+	log.Printf("GetOrderByUUID: param=%s, map keys=%v", params.OrderUUID.String(), s.orders)
 	s.mu.Unlock()
 
 	if !ok {
+		log.Printf("s.orders[params.OrderUUID.String()] - %v. Order not found in map!", s.orders[params.OrderUUID.String()])
 		return nil, status.Error(codes.NotFound, "order not found")
 	}
 
@@ -273,31 +288,63 @@ func main() {
 		log.Fatalf("failed to create ogen server: %v", err)
 	}
 
-	// 	ops := []string{"/api/v1/orders/", "/api/v1/order", "/api/v1/orders"}
-	// 	mtd := []string{"POST", "GET", "DELETE", "PUT"}
-	// 	for _, op := range ops {
-	// 		for _, mt := range mtd{
-	// 			if _, ok := ogenServer.FindRoute(mt, op); ok {
-	// 				fmt.Printf("%s %s\n", mt, op)
-	//
-	// 			} else {
-	// 				fmt.Println(mt, op, "Не нашел")
-	// 			}
-	// 		}
-	// 	}
+
+// 	httpServer := &http.Server{
+//     Addr:    ":" + httpPort,
+//     Handler: ogenServer,
+// }
 
 	httpServer := &http.Server{
-		Addr: ":" + httpPort,
+ 		Addr: ":" + httpPort,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("REQUEST: %s %s — вход в OGEN", r.Method, r.URL.Path)
+ 
+ 			// Создаем обертку ResponseWriter, чтобы логировать статус-код
+ 			lrw := &loggingResponseWriter{ResponseWriter: w, statusCode: 200}
+ 			ogenServer.ServeHTTP(lrw, r)
 
-			// Создаем обертку ResponseWriter, чтобы логировать статус-код
-			lrw := &loggingResponseWriter{ResponseWriter: w, statusCode: 200}
-			ogenServer.ServeHTTP(lrw, r)
-
+			body, _ := io.ReadAll(r.Body)
+			log.Printf("Body: %s, Query: %s", string(body), r.URL.RawQuery)
+			r.Body = io.NopCloser(bytes.NewBuffer(body))
+ 
 			log.Printf("REQUEST: %s %s — обработан OGEN с кодом %d", r.Method, r.URL.Path, lrw.statusCode)
 		}),
-	}
+}
+
+
+		log.Println("===== CHECK ROUTES =====")
+		paths := []string{
+			"/api/v1/order/", 
+			"/api/v1/order/123e4567-e89b-12d3-a456-426614174000",
+		}
+		methods := []string{"GET", "POST"}
+
+		for _, p := range paths {
+			for _, m := range methods {
+				_, ok := ogenServer.FindRoute(m, p)
+				log.Println(m, p, "->", ok)
+			}
+		}
+
+// 	ops := []string{
+//     "/api/v1/order/",
+//     "/api/v1/order",
+//     "/api/v1/order",
+//     "/api/v1/order/",
+//     "/api/v1/order/123e4567-e89b-12d3-a456-426614174000", // тестовый UUID
+// }
+// 
+// 	mtd := []string{"GET", "POST", "PUT", "DELETE"}
+// 
+// 	for _, op := range ops {
+// 		for _, mt := range mtd {
+// 			if route, ok := ogenServer.FindRoute(mt, op); ok {
+// 				log.Printf("FOUND: %s %s -> %s\n", mt, op, route.OperationID)
+// 			} else {
+// 				log.Printf("NOT FOUND: %s %s\n", mt, op)
+// 			}
+// 		}
+// }
 
 	// ---------------- Run HTTP server ----------------
 

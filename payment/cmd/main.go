@@ -22,7 +22,7 @@ func NewPaymentService() *PaymentService {
 
 func (s *PaymentService) PayOrder(ctx context.Context, req *pb.PayOrderRequest) (*pb.PayOrderResponse, error) {
 	tx := uuid.New()
-
+	log.Println("PAY ORDER is PAYMENT ")
 	log.Printf("Оплата прошла успешно, transaction_uuid: %s", tx)
 
 	return &pb.PayOrderResponse{

@@ -15,7 +15,7 @@ tags:
     description: Операции с заказами — получение и обновлен
   
 paths:
-  /api/v1/orders/: 
+  /api/v1/order: 
     $ref: ./paths/orders.yaml
 
   /api/v1/order/{order_uuid}:

@@ -112,7 +112,7 @@ func (s *CreateOrderRequest) SetPartUuids(val []uuid.UUID) {
 // Ref: #/components/schemas/create_order_response
 type CreateOrderResponse struct {
 	// Уникальный идентификатор заказа.
-	OrderUUID uuid.UUID `json:"order_uuid"`
+	OrderUUID uuid.UUID  `json:"order_uuid"`
 	// Итоговая стоимость.
 	TotalPrice float64 `json:"total_price"`
 }
@@ -637,7 +637,7 @@ type PaymentMethod string
 
 const (
 	PaymentMethodUNKNOWN    PaymentMethod = "UNKNOWN"
-	PaymentMethodCARD       PaymentMethod = "CARD"
+	PaymentMethodCARD      PaymentMethod = "CARD"
 	PaymentMethodSBP        PaymentMethod = "SBP"
 	PaymentMethodCREDITCARD PaymentMethod = "CREDIT_CARD"
 )

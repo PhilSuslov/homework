@@ -283,6 +283,7 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/api/v1/order/{order_uuid}"),
 	}
+	
 
 	// Run stopwatch.
 	startTime := time.Now()
