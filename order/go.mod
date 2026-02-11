@@ -1,6 +1,12 @@
-module github.com/PhilSuslov/homework/order/cmd
+module github.com/PhilSuslov/homework/order
 
 go 1.25.2
+
+replace github.com/PhilSuslov/homework/shared => ../shared
+
+replace github.com/PhilSuslov/homework/inventory => ../inventory
+
+replace github.com/PhilSuslov/homework/payment => ../payment
 
 require (
 	github.com/PhilSuslov/homework/shared v0.0.0-00010101000000-000000000000
@@ -38,5 +44,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/PhilSuslov/homework/shared => ../shared

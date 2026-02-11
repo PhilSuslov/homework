@@ -18,7 +18,7 @@ func (r *repository) GetPart(ctx context.Context, info model.GetPartRequest) (mo
 	}
 
 	return model.GetPartResponse{
-		Part: repoConverter.GetPartResponseToModel(part),
+		Part: repoConverter.GetPartResponseToModel(*part),
 	}, nil
 
 }

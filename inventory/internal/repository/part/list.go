@@ -2,25 +2,24 @@ package part
 
 import (
 	"context"
-	
-	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
+
 	"github.com/PhilSuslov/homework/inventory/internal/model"
+	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
 func (r *repository) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
-	var result []repoModel.Part
+
+	var result []repoModel.Part 
 	rp := repoConverter.ListPartsRequestToRepoModel(req)
 
 	for _, part := range r.parts {
-		if matchFilterList(part, &rp) {
-			result = append(result, part)
+		if matchFilterList(*part, &rp) {
+			result = append(result, *part)
 		}
 	}
-
 	return model.ListPartsResponse{
 		Parts: repoConverter.ListPartsResponseToModel(result),
 	}, nil
