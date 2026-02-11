@@ -1,4 +1,4 @@
-module inventory
+module github.com/PhilSuslov/homework/inventory
 
 go 1.25.2
 
@@ -6,7 +6,7 @@ replace github.com/PhilSuslov/homework/shared => ../shared
 
 require (
 	github.com/PhilSuslov/homework/shared v0.0.0-00010101000000-000000000000
-	github.com/google/uuid v1.6.0
+	github.com/samber/lo v1.52.0
 	google.golang.org/grpc v1.78.0
 )
 

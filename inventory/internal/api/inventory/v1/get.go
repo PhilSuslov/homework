@@ -3,20 +3,20 @@ package v1
 import (
 	"context"
 
-	pb "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	conv "github.com/PhilSuslov/homework/inventory/internal/converter"
+	"github.com/PhilSuslov/homework/inventory/internal/model"
+	inventory_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
 )
 
+func (a *api) GetPart(ctx context.Context, req *inventory_v1.GetPartRequest) (*inventory_v1.GetPartResponse, error) {
+	part, err := a.inventoryService.GetPart(ctx, conv.InventoryGetToModel(req))
 
-func (s *InventoryService) GetPart(ctx context.Context, req *pb.GetPartRequest) (*pb.GetPartResponse, error) {
-	part, ok := s.parts[req.Uuid]
-	if !ok {
-		return nil, status.Error(codes.NotFound, "part not found")
+	if err != nil {
+		return nil, model.ErrNotFound
 	}
 
-	return &pb.GetPartResponse{
-		Part: part,
+	return &inventory_v1.GetPartResponse{
+		Part: conv.InventoryGetPartResponseToProto(part.Part),
 	}, nil
 
 }
