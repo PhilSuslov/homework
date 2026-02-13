@@ -4,34 +4,38 @@ import (
 	"context"
 	"log"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	// orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 	orderErr "github.com/PhilSuslov/homework/order/internal/model"
+	orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
 
 	"github.com/google/uuid"
 )
 
-func (s *OrderRepo) PayOrderCreate(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (*orderV1.OrderDto, bool) {
+func (s *OrderRepo) PayOrderCreate(ctx context.Context, req *orderRepoModel.PayOrderRequest, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool) {
 	s.mu.Lock()
-	order, ok := s.orders[params.OrderUUID.String()]
+	order, ok := s.orders[orderUUID.String()]
 	s.mu.Unlock()
 	return order, ok
 }
 
-func (s *OrderRepo) PayOrder(orderUUID string, transactionuuid uuid.UUID, paymentMethod orderV1.PaymentMethod) (*orderV1.PayOrderResponse, error) {
+func (s *OrderRepo) PayOrder(orderUUID uuid.UUID, uuidPay uuid.UUID, paymentMethod string) (*string, error) {
 	s.mu.Lock()
-	order, ok := s.orders[orderUUID]
+	order, ok := s.orders[orderUUID.String()]
 	if !ok {
 		return nil, orderErr.ErrNotFound
 	}
+	var err error
 
-	order.Status = orderV1.OrderStatusPAID
-	order.TransactionUUID.Value = transactionuuid
-	order.PaymentMethod.Value = paymentMethod
+	order.Status = orderRepoModel.OrderStatusPAID
+	order.TransactionUUID.Value, err = uuid.Parse(uuidPay.String())
+	order.PaymentMethod.Value = orderRepoConv.PaymentMethodToRepo(paymentMethod)
 	log.Println("=== Статус оплаты должен быть ===", s.orders)
 	s.mu.Unlock()
 
-	resp := &orderV1.PayOrderResponse{TransactionUUID: transactionuuid}
+	resp := order.TransactionUUID.Value.String()
+	// resp := &orderRepoModel.PayOrderResponse{TransactionUUID: order.TransactionUUID.Value }
 
-	return resp, nil
+	return &resp, err
 
 }

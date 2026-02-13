@@ -1,12 +1,10 @@
 package model
 
 type PayOrderRequest struct {
-	OrderUuid     string                 
-	UserUuid      string          
-	PaymentMethod PaymentMethod          
+	OrderUuid     string
+	UserUuid      string
+	PaymentMethod PaymentMethod
 }
-
-
 
 // Доступные способы оплаты
 type PaymentMethod int32

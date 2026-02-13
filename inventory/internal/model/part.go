@@ -46,7 +46,6 @@ type Part struct {
 	UpdatedAt     time.Time
 }
 
-
 // Manufacturer структура
 type Manufacturer struct {
 	Name    string

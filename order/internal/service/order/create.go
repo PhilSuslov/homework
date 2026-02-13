@@ -4,7 +4,9 @@ import (
 	"context"
 	"log"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	// orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
 
 	"github.com/google/uuid"
@@ -12,9 +14,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
+func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceModel.CreateOrderRequest) (orderServiceModel.CreateOrderResponse, error) {
 	if request.UserUUID == uuid.Nil || len(request.UserUUID) == 0 {
-		return nil, status.Errorf(codes.Internal, "inventory error")
+		return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error")
 	}
 
 	strUUID := make([]string, len(request.PartUuids))
@@ -30,7 +32,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 	})
 	if err != nil {
 		log.Printf("Inventory ListParts error: %v", err)
-		return nil, status.Errorf(codes.Internal, "inventory error: %v", err)
+		return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error: %v", err)
 	}
 
 	log.Printf("Inventory ListParts response: %+v", partsResp)
@@ -38,7 +40,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 	// 2. Проверяем, что все детали найдены
 	if len(partsResp.Parts) != len(request.PartUuids) {
 		log.Printf("Not all parts found: expected=%d, got=%d", len(request.PartUuids), len(partsResp.Parts))
-		return nil, status.Error(codes.NotFound, "some parts not found")
+		return orderServiceModel.CreateOrderResponse{}, status.Error(codes.NotFound, "some parts not found")
 	}
 
 	// 3. Считаем цену
@@ -51,19 +53,20 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderV1.CreateO
 
 	orderUUID := uuid.New()
 
-	order := &orderV1.OrderDto{
+	order := &orderServiceModel.OrderDto{
 		OrderUUID:  orderUUID,
 		UserUUID:   request.UserUUID,
 		PartUuids:  request.PartUuids,
 		TotalPrice: total_price,
-		Status:     orderV1.OrderStatusPENDINGPAYMENT,
+		Status:     orderServiceModel.OrderStatusPENDINGPAYMENT,
 	}
 
-	s.orderService.CreateOrder(order)
+	// ans := orderRepoConv.OrderDtoToService(order)
+	s.orderService.CreateOrder(orderRepoConv.OrderDtoToRepo(order))
 
-	return &orderV1.CreateOrderResponse{
+	return orderServiceModel.CreateOrderResponse{
 		OrderUUID:  order.OrderUUID,
-		TotalPrice: order.TotalPrice,
+		TotalPrice: total_price,
 	}, nil
 
 }

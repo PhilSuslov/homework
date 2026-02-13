@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/PhilSuslov/homework/payment/internal/service"
-	"github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+	payment_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
 )
 
 type api struct {
@@ -11,6 +11,6 @@ type api struct {
 	PayService service.PayService
 }
 
-func NewAPI() *api{
+func NewAPI() *api {
 	return &api{}
 }

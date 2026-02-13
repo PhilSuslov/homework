@@ -6,12 +6,13 @@ package order
 import (
 	"context"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+	"github.com/google/uuid"
 )
 
-func (s *OrderRepo) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (*orderV1.OrderDto, bool) {
+func (s *OrderRepo) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool) {
 	s.mu.Lock()
-	order, ok := s.orders[params.OrderUUID.String()]
+	order, ok := s.orders[orderUUID.String()]
 	s.mu.Unlock()
 	return order, ok
 }

@@ -1,17 +1,16 @@
 package repository
 
-
 import (
 	"context"
 
+	orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
 	"github.com/google/uuid"
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 )
 
 // Проверить Response и Res!
 type OrderRepository interface {
-	CreateOrder(order *orderV1.OrderDto)
-	PayOrder(id string, transactionuuid uuid.UUID, paymentMethod orderV1.PaymentMethod) (*orderV1.PayOrderResponse, error)
-	GetOrderByUUID(ctx context.Context, params orderV1.GetOrderByUUIDParams) (*orderV1.OrderDto, bool)
-	CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (*orderV1.OrderDto, bool)
+	CreateOrder(order *orderRepoModel.OrderDto)
+	PayOrder(orderUUID uuid.UUID, payUUID uuid.UUID, paymentMethod string) (*string, error)
+	GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
+	CancelOrder(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
 }

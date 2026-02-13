@@ -3,8 +3,8 @@ package order
 import (
 	"sync"
 
+	orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
 	def "github.com/PhilSuslov/homework/order/internal/repository"
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 
 )
 
@@ -12,11 +12,11 @@ var _ def.OrderRepository = (*OrderRepo)(nil)
 
 type OrderRepo struct {
 	mu     sync.RWMutex
-	orders map[string]*orderV1.OrderDto
+	orders map[string]*orderRepoModel.OrderDto
 }
 
 func NewOrderRepo() *OrderRepo {
 	return &OrderRepo{
-		orders:          make(map[string]*orderV1.OrderDto),
+		orders:          make(map[string]*orderRepoModel.OrderDto),
 	}
 }

@@ -17,4 +17,3 @@ func (s *service) PayOrder(ctx context.Context, req *payment_v1.PayOrderRequest)
 		TransactionUuid: tx.String(),
 	}, nil
 }
-

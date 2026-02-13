@@ -1,14 +1,13 @@
 package part
 
 import (
-	def "github.com/PhilSuslov/homework/inventory/internal/service"
 	repo "github.com/PhilSuslov/homework/inventory/internal/repository"
-	// repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+	def "github.com/PhilSuslov/homework/inventory/internal/service"
 )
 
 var _ def.InventoryService = (*service)(nil)
 
-type service struct{
+type service struct {
 	repository repo.InventoryRepository
 }
 

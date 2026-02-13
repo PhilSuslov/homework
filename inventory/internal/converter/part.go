@@ -119,7 +119,7 @@ func InventoryListPartsResponseToProto(info *inventory_v1.ListPartsResponse) mod
 	}
 }
 
-func InventoryListPartsResponseToModel(info model.ListPartsResponse) *inventory_v1.ListPartsResponse{
+func InventoryListPartsResponseToModel(info model.ListPartsResponse) *inventory_v1.ListPartsResponse {
 	parts := make([]*inventory_v1.Part, 0, len(info.Parts))
 
 	for _, p := range info.Parts {

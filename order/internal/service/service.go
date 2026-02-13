@@ -3,13 +3,14 @@ package service
 import (
 	"context"
 
-
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+	"github.com/google/uuid"
 )
 
 type OrderService interface {
-	CreateOrder(ctx context.Context, request *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error)
-	PayOrder(ctx context.Context,req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error)
-	GetOrderByUUID(ctx context.Context, params orderV1.GetOrderByUUIDParams) (orderV1.GetOrderByUUIDRes, error)
-	CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (orderV1.CancelOrderRes, error)
+	CreateOrder(ctx context.Context, request *orderServiceModel.CreateOrderRequest) (orderServiceModel.CreateOrderResponse, error)
+	PayOrder(ctx context.Context,req *orderServiceModel.PayOrderRequest, orderUUID uuid.UUID) (orderServiceModel.PayOrderResponse, error)
+	GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderServiceModel.OrderDto, error)
+	CancelOrder(ctx context.Context, orderUUID uuid.UUID) ( error)
+	NewError(ctx context.Context, err error) *orderServiceModel.GenericErrorStatusCode 
 }

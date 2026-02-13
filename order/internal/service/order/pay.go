@@ -3,8 +3,10 @@ package order
 import (
 	"context"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	orderModel "github.com/PhilSuslov/homework/order/internal/model"
+	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
 	paymentV1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -12,20 +14,20 @@ import (
 )
 
 func (s *OrderService) PayOrder(ctx context.Context,
-	req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
+	req *orderModel.PayOrderRequest, orderUUID uuid.UUID) (orderModel.PayOrderResponse, error) {
 
-	order, ok := s.orderService.PayOrderCreate(ctx, req, params)
+	order, ok := s.orderService.PayOrderCreate(ctx, orderRepoConv.PayOrderRequestToRepo(req), orderUUID)
 
 	if !ok {
-		return nil, status.Error(codes.NotFound, "order not found")
+		return orderModel.PayOrderResponse{}, status.Error(codes.NotFound, "order not found")
 	}
 
-	if order.Status == orderV1.OrderStatusPAID {
-		return nil, status.Error(codes.Canceled, "order already paid")
+	if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusPAID) {
+		return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order already paid")
 	}
 
-	if order.Status == orderV1.OrderStatusCANCELLED {
-		return nil, status.Error(codes.Canceled, "order cancelled")
+	if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusCANCELLED) {
+		return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order cancelled")
 	}
 
 	//Проверка метода оплаты
@@ -50,14 +52,15 @@ func (s *OrderService) PayOrder(ctx context.Context,
 		PaymentMethod: pm,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "payment error: %v", err)
+		return orderModel.PayOrderResponse{}, status.Errorf(codes.Internal, "payment error: %v", err)
 	}
 	transactionUUID := payResp.TransactionUuid
 	paymentMethod := req.PaymentMethod
 
 	transactionuuid, _ := uuid.Parse(transactionUUID)
 
-	resp, err := s.orderService.PayOrder(order.OrderUUID.String(), transactionuuid, paymentMethod)
-	return resp, err
+	resp, err := s.orderService.PayOrder(order.OrderUUID, transactionuuid, string(paymentMethod))
+	respConv := orderRepoConv.PayOrderResponseToService(*resp)
+	return respConv, err
 
 }

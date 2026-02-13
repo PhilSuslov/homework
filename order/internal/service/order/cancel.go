@@ -3,22 +3,25 @@ package order
 import (
 	"context"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+	orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+	orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"github.com/google/uuid"
 )
 
-func (s *OrderService) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (orderV1.CancelOrderRes, error) {
-	order, ok := s.orderService.CancelOrder(ctx, params)
+func (s *OrderService) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (error){
+	order, ok := s.orderService.CancelOrder(ctx, orderUUID)
 	if !ok {
-		return nil, status.Error(codes.NotFound, "order not found")
+		return status.Error(codes.NotFound, "order not found")
 	}
 
-	if order.Status == orderV1.OrderStatusPAID {
-		return nil, status.Error(codes.Unknown, "Conflict")
+	if order.Status == orderRepoModel.OrderStatus(orderServiceModel.OrderStatusPAID){
+		return status.Error(codes.Unknown, "Conflict")
 	}
 
-	order.Status = orderV1.OrderStatusCANCELLED
+	order.Status = orderRepoModel.OrderStatus(orderServiceModel.OrderStatusCANCELLED)
 
-	return nil, status.Error(codes.Canceled, "No content")
+	return status.Error(codes.Canceled, "No content")
 }
