@@ -3,16 +3,16 @@ package part
 import (
 	"context"
 
-	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
 	"github.com/PhilSuslov/homework/inventory/internal/model"
+	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
-func (r *repository) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) {
+func (r *Repository) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	part, ok := r.parts[info.Uuid]
+	part, ok := r.Parts[info.Uuid]
 	if !ok {
 		return model.GetPartResponse{}, repoModel.ErrNotFound
 	}

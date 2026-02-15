@@ -1,0 +1,5 @@
+mode: atomic
+github.com/PhilSuslov/homework/payment/internal/service/payment/pay.go:12.120,13.16 1 4
+github.com/PhilSuslov/homework/payment/internal/service/payment/pay.go:13.16,15.3 1 1
+github.com/PhilSuslov/homework/payment/internal/service/payment/pay.go:17.2,23.8 4 3
+github.com/PhilSuslov/homework/payment/internal/service/payment/service.go:12.35,14.2 1 4

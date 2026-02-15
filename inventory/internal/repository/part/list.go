@@ -8,14 +8,14 @@ import (
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
-func (r *repository) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) {
+func (r *Repository) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var result []repoModel.Part 
+	var result []repoModel.Part
 	rp := repoConverter.ListPartsRequestToRepoModel(req)
 
-	for _, part := range r.parts {
+	for _, part := range r.Parts {
 		if matchFilterList(*part, &rp) {
 			result = append(result, *part)
 		}
@@ -107,7 +107,8 @@ func matchFilterList(part repoModel.Part, f *repoModel.ListPartsRequest) bool {
 
 	return true
 }
-// 
+
+//
 // func containsUUID(arr []string, v uuid.UUID) bool {
 // 	for _, x := range arr {
 // 		u, err := uuid.Parse(x)
@@ -120,7 +121,7 @@ func matchFilterList(part repoModel.Part, f *repoModel.ListPartsRequest) bool {
 // 	}
 // 	return false
 // }
-// 
+//
 // func containsString(arr []string, v string) bool {
 // 	for _, x := range arr {
 // 		if x == v {
@@ -129,7 +130,7 @@ func matchFilterList(part repoModel.Part, f *repoModel.ListPartsRequest) bool {
 // 	}
 // 	return false
 // }
-// 
+//
 // func containsCategory(arr []model.Category, v model.Category) bool {
 // 	for _, x := range arr {
 // 		if x == v {
@@ -138,7 +139,7 @@ func matchFilterList(part repoModel.Part, f *repoModel.ListPartsRequest) bool {
 // 	}
 // 	return false
 // }
-// 
+//
 // func containsAny(filter []string, tags []string) bool {
 // 	for _, f := range filter {
 // 		for _, t := range tags {

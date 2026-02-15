@@ -1,0 +1,1162 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>converter: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/PhilSuslov/homework/inventory/internal/repository/converter/part.go (50.0%)</option>
+				
+				<option value="file1">github.com/PhilSuslov/homework/inventory/internal/repository/part/get.go (100.0%)</option>
+				
+				<option value="file2">github.com/PhilSuslov/homework/inventory/internal/repository/part/list.go (98.1%)</option>
+				
+				<option value="file3">github.com/PhilSuslov/homework/inventory/internal/repository/part/repository.go (100.0%)</option>
+				
+				<option value="file4">github.com/PhilSuslov/homework/inventory/internal/service/part/get.go (100.0%)</option>
+				
+				<option value="file5">github.com/PhilSuslov/homework/inventory/internal/service/part/list.go (75.0%)</option>
+				
+				<option value="file6">github.com/PhilSuslov/homework/inventory/internal/service/part/service.go (100.0%)</option>
+				
+				<option value="file7">github.com/PhilSuslov/homework/order/internal/repository/converter/order.go (47.1%)</option>
+				
+				<option value="file8">github.com/PhilSuslov/homework/order/internal/repository/model/order.go (0.0%)</option>
+				
+				<option value="file9">github.com/PhilSuslov/homework/order/internal/repository/order/cancel.go (0.0%)</option>
+				
+				<option value="file10">github.com/PhilSuslov/homework/order/internal/repository/order/create.go (0.0%)</option>
+				
+				<option value="file11">github.com/PhilSuslov/homework/order/internal/repository/order/get.go (0.0%)</option>
+				
+				<option value="file12">github.com/PhilSuslov/homework/order/internal/repository/order/pay.go (0.0%)</option>
+				
+				<option value="file13">github.com/PhilSuslov/homework/order/internal/repository/order/repository.go (0.0%)</option>
+				
+				<option value="file14">github.com/PhilSuslov/homework/order/internal/service/order/cancel.go (100.0%)</option>
+				
+				<option value="file15">github.com/PhilSuslov/homework/order/internal/service/order/create.go (77.3%)</option>
+				
+				<option value="file16">github.com/PhilSuslov/homework/order/internal/service/order/get.go (100.0%)</option>
+				
+				<option value="file17">github.com/PhilSuslov/homework/order/internal/service/order/newError.go (0.0%)</option>
+				
+				<option value="file18">github.com/PhilSuslov/homework/order/internal/service/order/pay.go (74.1%)</option>
+				
+				<option value="file19">github.com/PhilSuslov/homework/order/internal/service/order/service.go (0.0%)</option>
+				
+				<option value="file20">github.com/PhilSuslov/homework/payment/internal/service/payment/pay.go (100.0%)</option>
+				
+				<option value="file21">github.com/PhilSuslov/homework/payment/internal/service/payment/service.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package converter
+
+import (
+        "github.com/PhilSuslov/homework/inventory/internal/model"
+        repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+
+)
+
+func GetPartResponseToRepoModel(info model.Part) repoModel.Part<span class="cov0" title="0">{
+        return repoModel.Part{
+                Uuid:          info.Uuid,
+                Name:          info.Name,
+                Description:   info.Description,
+                Price:         info.Price,
+                StockQuantity: info.StockQuantity,
+                Category:      repoModel.Category(info.Category),
+                Dimensions:    repoModel.Dimensions(info.Dimensions),
+                Manufacturer:  repoModel.Manufacturer(info.Manufacturer),
+                Tags:          info.Tags,
+                CreatedAt:     info.CreatedAt,
+                UpdatedAt:     info.UpdatedAt,
+        }
+}</span>
+
+func GetPartResponseToModel(repo repoModel.Part) model.Part<span class="cov10" title="14">{
+        return model.Part{
+                Uuid:          repo.Uuid,
+                Name:          repo.Name,
+                Description:   repo.Description,
+                Price:         repo.Price,
+                StockQuantity: repo.StockQuantity,
+                Category:      model.Category(repo.Category),
+                Dimensions:    model.Dimensions(repo.Dimensions),
+                Manufacturer:  model.Manufacturer(repo.Manufacturer),
+                Tags:          repo.Tags,
+                CreatedAt:     repo.CreatedAt,
+                UpdatedAt:     repo.UpdatedAt,
+        }
+}</span>
+
+func PartsFilterToModel(repo repoModel.PartsFilter) model.PartsFilter<span class="cov0" title="0">{
+        return model.PartsFilter{
+                Uuids: repo.Uuids,
+                Names: repo.Names,
+                Categories: RepoCategoriesToModel(repo.Categories),
+                ManufacturerCountries: repo.ManufacturerCountries,
+                Tags: repo.Tags,
+        }
+}</span>
+
+func PartsFilterToRepoModel(info model.PartsFilter) repoModel.PartsFilter<span class="cov7" title="7">{
+        return repoModel.PartsFilter{
+                Uuids: info.Uuids,
+                Names: info.Names,
+                Categories: RepoCategoriesToRepoModel(info.Categories),
+                ManufacturerCountries: info.ManufacturerCountries,
+                Tags: info.Tags,
+                
+        }
+}</span>
+
+func ListPartsRequestToRepoModel(info model.ListPartsRequest) repoModel.ListPartsRequest<span class="cov7" title="7">{
+        return repoModel.ListPartsRequest{
+                Filter: PartsFilterToRepoModel(info.Filter),
+        }
+}</span>
+
+
+func ListPartsRequestToModel(repo repoModel.ListPartsRequest) model.ListPartsRequest<span class="cov0" title="0">{
+        return model.ListPartsRequest{
+                Filter: PartsFilterToModel(repo.Filter),
+        }
+}</span>
+
+func RepoCategoriesToModel(repo []repoModel.Category) []model.Category<span class="cov0" title="0">{
+        res := make([]model.Category, 0, len(repo))
+        for _, c := range repo</span><span class="cov0" title="0">{
+                res = append(res, model.Category(c))
+        }</span>
+        <span class="cov0" title="0">return res</span>
+}
+
+func RepoCategoriesToRepoModel(info []model.Category) []repoModel.Category<span class="cov7" title="7">{
+        res := make([]repoModel.Category, 0, len(info))
+        for _, c := range info</span><span class="cov3" title="2">{
+                res = append(res, repoModel.Category(c))
+        }</span>
+        <span class="cov7" title="7">return res</span>
+}
+
+func ListPartsResponseToRepoModel(info []model.Part) []repoModel.Part<span class="cov0" title="0">{
+        res := make([]repoModel.Part, 0, len(info))
+        for _, c := range info</span><span class="cov0" title="0">{
+                res = append(res, GetPartResponseToRepoModel(c))
+        }</span>
+        <span class="cov0" title="0">return res</span>
+}
+
+func ListPartsResponseToModel(repo []repoModel.Part) []model.Part<span class="cov7" title="7">{
+        res := make([]model.Part, 0, len(repo))
+        for _, c := range repo</span><span class="cov9" title="13">{
+                res = append(res, GetPartResponseToModel(c))
+        }</span>
+        <span class="cov7" title="7">return res</span>
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package part
+
+import (
+        "context"
+
+        "github.com/PhilSuslov/homework/inventory/internal/model"
+        repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
+        repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+)
+
+func (r *Repository) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) <span class="cov10" title="2">{
+        r.mu.RLock()
+        defer r.mu.RUnlock()
+
+        part, ok := r.Parts[info.Uuid]
+        if !ok </span><span class="cov1" title="1">{
+                return model.GetPartResponse{}, repoModel.ErrNotFound
+        }</span>
+
+        <span class="cov1" title="1">return model.GetPartResponse{
+                Part: repoConverter.GetPartResponseToModel(*part),
+        }, nil</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package part
+
+import (
+        "context"
+
+        "github.com/PhilSuslov/homework/inventory/internal/model"
+        repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
+        repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+)
+
+func (r *Repository) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) <span class="cov6" title="7">{
+        r.mu.RLock()
+        defer r.mu.RUnlock()
+
+        var result []repoModel.Part
+        rp := repoConverter.ListPartsRequestToRepoModel(req)
+
+        for _, part := range r.Parts </span><span class="cov10" title="28">{
+                if matchFilterList(*part, &amp;rp) </span><span class="cov7" title="13">{
+                        result = append(result, *part)
+                }</span>
+        }
+        <span class="cov6" title="7">return model.ListPartsResponse{
+                Parts: repoConverter.ListPartsResponseToModel(result),
+        }, nil</span>
+}
+
+func matchFilterList(part repoModel.Part, f *repoModel.ListPartsRequest) bool <span class="cov10" title="28">{
+        if f == nil </span><span class="cov0" title="0">{
+                return true // нет фильтра — все подходят
+        }</span>
+
+        // Проверка UUID (логическое ИЛИ внутри)
+        <span class="cov10" title="28">if len(f.Filter.Uuids) &gt; 0 </span><span class="cov4" title="4">{
+                match := false
+                for _, id := range f.Filter.Uuids </span><span class="cov4" title="4">{
+                        if id == part.Uuid </span><span class="cov1" title="1">{
+                                match = true
+                                break</span>
+                        }
+                }
+                <span class="cov4" title="4">if !match </span><span class="cov3" title="3">{
+                        return false
+                }</span>
+        }
+
+        // Проверка имен
+        <span class="cov9" title="25">if len(f.Filter.Names) &gt; 0 </span><span class="cov4" title="4">{
+                match := false
+                for _, name := range f.Filter.Names </span><span class="cov4" title="4">{
+                        if name == part.Name </span><span class="cov1" title="1">{
+                                match = true
+                                break</span>
+                        }
+                }
+                <span class="cov4" title="4">if !match </span><span class="cov3" title="3">{
+                        return false
+                }</span>
+        }
+
+        // Проверка категорий
+        <span class="cov9" title="22">if len(f.Filter.Categories) &gt; 0 </span><span class="cov6" title="8">{
+                match := false
+                for _, cat := range f.Filter.Categories </span><span class="cov6" title="8">{
+                        if cat == part.Category </span><span class="cov4" title="4">{
+                                match = true
+                                break</span>
+                        }
+                }
+                <span class="cov6" title="8">if !match </span><span class="cov4" title="4">{
+                        return false
+                }</span>
+        }
+
+        // Проверка стран производителей
+        <span class="cov8" title="18">if len(f.Filter.ManufacturerCountries) &gt; 0 </span><span class="cov5" title="6">{
+                match := false
+                for _, country := range f.Filter.ManufacturerCountries </span><span class="cov5" title="6">{
+                        if country == part.Manufacturer.Country </span><span class="cov4" title="4">{
+                                match = true
+                                break</span>
+                        }
+                }
+                <span class="cov5" title="6">if !match </span><span class="cov2" title="2">{
+                        return false
+                }</span>
+        }
+
+        // Проверка тегов (любое совпадение с тегами части)
+        <span class="cov8" title="16">if len(f.Filter.Tags) &gt; 0 </span><span class="cov5" title="6">{
+                match := false
+                for _, tag := range f.Filter.Tags </span><span class="cov5" title="6">{
+                        for _, partTag := range part.Tags </span><span class="cov5" title="6">{
+                                if tag == partTag </span><span class="cov3" title="3">{
+                                        match = true
+                                        break</span>
+                                }
+                        }
+                        <span class="cov5" title="6">if match </span><span class="cov3" title="3">{
+                                break</span>
+                        }
+                }
+                <span class="cov5" title="6">if !match </span><span class="cov3" title="3">{
+                        return false
+                }</span>
+        }
+
+        <span class="cov7" title="13">return true</span>
+}
+
+//
+// func containsUUID(arr []string, v uuid.UUID) bool {
+//         for _, x := range arr {
+//                 u, err := uuid.Parse(x)
+//                 if err != nil {
+//                         continue
+//                 }
+//                 if u == v {
+//                         return true
+//                 }
+//         }
+//         return false
+// }
+//
+// func containsString(arr []string, v string) bool {
+//         for _, x := range arr {
+//                 if x == v {
+//                         return true
+//                 }
+//         }
+//         return false
+// }
+//
+// func containsCategory(arr []model.Category, v model.Category) bool {
+//         for _, x := range arr {
+//                 if x == v {
+//                         return true
+//                 }
+//         }
+//         return false
+// }
+//
+// func containsAny(filter []string, tags []string) bool {
+//         for _, f := range filter {
+//                 for _, t := range tags {
+//                         if f == t {
+//                                 return true
+//                         }
+//                 }
+//         }
+//         return false
+// }
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package part
+
+import (
+        "sync"
+
+        "github.com/google/uuid"
+
+        def "github.com/PhilSuslov/homework/inventory/internal/repository"
+        repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+)
+
+var _ def.InventoryRepository = (*Repository)(nil)
+
+type Repository struct {
+        mu    sync.RWMutex
+        Parts map[string]*repoModel.Part
+}
+
+func NewRepository() *Repository <span class="cov10" title="9">{
+        repo := &amp;Repository{
+                Parts: make(map[string]*repoModel.Part),
+        }
+
+        id := uuid.New().String()
+        repo.Parts[id] = &amp;repoModel.Part{
+                Uuid:  id,
+                Name:  "Test Part",
+                Price: 100.0,
+        }
+        return repo
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package part
+
+import (
+        "context"
+
+        "github.com/PhilSuslov/homework/inventory/internal/model"
+        repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+)
+
+func (s *service) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) <span class="cov10" title="2">{
+        part, err := s.repository.GetPart(ctx, info)
+
+        if err != nil </span><span class="cov1" title="1">{
+                return model.GetPartResponse{}, repoModel.ErrNotFound
+        }</span>
+
+        <span class="cov1" title="1">return part, nil</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package part
+
+import (
+        "context"
+
+        "github.com/PhilSuslov/homework/inventory/internal/model"
+)
+
+func (s *service) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) <span class="cov10" title="7">{
+        part, err := s.repository.ListParts(ctx, req)
+        if err != nil </span><span class="cov0" title="0">{
+                return model.ListPartsResponse{}, err
+        }</span>
+
+        <span class="cov10" title="7">return part, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package part
+
+import (
+        repo "github.com/PhilSuslov/homework/inventory/internal/repository"
+        def "github.com/PhilSuslov/homework/inventory/internal/service"
+)
+
+var _ def.InventoryService = (*service)(nil)
+
+type service struct {
+        repository repo.InventoryRepository
+}
+
+func NewService(repository repo.InventoryRepository) *service <span class="cov10" title="11">{
+        return &amp;service{
+                repository: repository,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package converter
+
+import (
+        // "github.com/google/uuid"
+        orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+        "github.com/google/uuid"
+)
+
+func PayOrderRequestToService(repo *orderRepoModel.PayOrderRequest) *orderServiceModel.PayOrderRequest <span class="cov0" title="0">{
+        return &amp;orderServiceModel.PayOrderRequest{
+                OrderUUID:     repo.OrderUUID,
+                PaymentMethod: orderServiceModel.PaymentMethod(repo.PaymentMethod),
+        }
+}</span>
+
+func PayOrderRequestToRepo(service *orderServiceModel.PayOrderRequest) *orderRepoModel.PayOrderRequest <span class="cov7" title="4">{
+        return &amp;orderRepoModel.PayOrderRequest{
+                OrderUUID:     service.OrderUUID,
+                PaymentMethod: orderRepoModel.PaymentMethod(service.PaymentMethod),
+        }
+}</span>
+
+func PayOrderParamsToService(repo *orderRepoModel.PayOrderParams) *orderServiceModel.PayOrderParams <span class="cov0" title="0">{
+        return &amp;orderServiceModel.PayOrderParams{
+                OrderUUID: repo.OrderUUID,
+        }
+}</span>
+
+func PayOrderParamsToRepo(service uuid.UUID) orderRepoModel.PayOrderParams <span class="cov0" title="0">{
+        return orderRepoModel.PayOrderParams{
+                OrderUUID: service,
+        }
+}</span>
+
+func OrderStatusToRepo(service orderServiceModel.OrderStatus) orderRepoModel.OrderStatus<span class="cov10" title="8">{
+        return orderRepoModel.OrderStatus(service)
+}</span>
+
+func OrderStatusToService(repo orderRepoModel.OrderStatus) orderServiceModel.OrderStatus<span class="cov0" title="0">{
+        return orderServiceModel.OrderStatus(repo)
+}</span>
+
+func PaymentMethodToRepo(service string) orderRepoModel.PaymentMethod<span class="cov0" title="0">{
+        return orderRepoModel.PaymentMethod(service)
+}</span>
+
+func PaymentMethodToService(repo string) orderServiceModel.PaymentMethod<span class="cov0" title="0">{
+        return orderServiceModel.PaymentMethod(repo)
+}</span>
+
+func PayOrderResponseToService(repo string) orderServiceModel.PayOrderResponse<span class="cov1" title="1">{
+        repoUUID, _ := uuid.Parse(repo)
+        return orderServiceModel.PayOrderResponse{
+                TransactionUUID: repoUUID,
+        }
+}</span>
+
+func PayOrderResponseToRepo(service *orderServiceModel.PayOrderResponse) orderRepoModel.PayOrderResponse<span class="cov0" title="0">{
+        return orderRepoModel.PayOrderResponse{
+                TransactionUUID: service.TransactionUUID,
+        }
+}</span>
+
+func GetOrderByUUIDToService(repo *orderRepoModel.GetOrderByUUIDParams) orderServiceModel.GetOrderByUUIDParams <span class="cov0" title="0">{
+        return orderServiceModel.GetOrderByUUIDParams{
+                OrderUUID: repo.OrderUUID,
+        }
+}</span>
+
+func GetOrderByUUIDToRepo(service *orderServiceModel.GetOrderByUUIDParams) orderRepoModel.GetOrderByUUIDParams <span class="cov0" title="0">{
+        return orderRepoModel.GetOrderByUUIDParams{
+                OrderUUID: service.OrderUUID,
+        }
+}</span>
+
+func OrderDtoToRepo(service *orderServiceModel.OrderDto) *orderRepoModel.OrderDto <span class="cov1" title="1">{
+        return &amp;orderRepoModel.OrderDto{
+                OrderUUID:       service.OrderUUID,
+                UserUUID:        service.UserUUID,
+                PartUuids:       service.PartUuids,
+                TotalPrice:      service.TotalPrice,
+                TransactionUUID: orderRepoModel.OptNilString(service.TransactionUUID),
+                PaymentMethod:   OptPaymentMethodToRepo(service.PaymentMethod),
+                Status:          orderRepoModel.OrderStatus(service.Status),
+        }
+}</span>
+
+func OptPaymentMethodToRepo(service orderServiceModel.OptPaymentMethod) orderRepoModel.OptPaymentMethod<span class="cov1" title="1">{
+        return orderRepoModel.OptPaymentMethod{
+                Value: orderRepoModel.PaymentMethod(service.Value),
+                Set: service.Set,
+        }
+}</span>
+
+func OrderDtoToService(repo *orderRepoModel.OrderDto) *orderServiceModel.OrderDto <span class="cov1" title="1">{
+        return &amp;orderServiceModel.OrderDto{
+                OrderUUID:       repo.OrderUUID,
+                UserUUID:        repo.UserUUID,
+                PartUuids:       repo.PartUuids,
+                TotalPrice:      repo.TotalPrice,
+                TransactionUUID: orderServiceModel.OptNilString(repo.TransactionUUID),
+                PaymentMethod:   OptPaymentMethodToService(repo.PaymentMethod),
+                Status:          orderServiceModel.OrderStatus(repo.Status),
+        }
+}</span>
+
+func OptPaymentMethodToService(repo orderRepoModel.OptPaymentMethod) orderServiceModel.OptPaymentMethod<span class="cov1" title="1">{
+        return orderServiceModel.OptPaymentMethod{
+                Value: orderServiceModel.PaymentMethod(repo.Value),
+                Set: repo.Set,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package model
+
+import "github.com/google/uuid"
+
+type OrderDto struct {
+    // Уникальный идентификатор заказа.
+    OrderUUID uuid.UUID `json:"order_uuid"`
+    // UUID пользователя.
+    UserUUID  uuid.UUID   `json:"user_uuid"`
+    PartUuids []uuid.UUID `json:"part_uuids"`
+    // Итоговая стоимость.
+    TotalPrice float64 `json:"total_price"`
+    // UUID транзакции (если оплачен).
+    TransactionUUID OptNilString     `json:"transaction_uuid"`
+    PaymentMethod   OptPaymentMethod `json:"payment_method"`
+    Status          OrderStatus      `json:"status"`
+}
+
+type PayOrderRequest struct {
+    OrderUUID     uuid.UUID     `json:"order_uuid"`
+    PaymentMethod PaymentMethod `json:"payment_method"`
+}
+
+type PayOrderParams struct {
+    // UUID пользователя, для которого запрашиваются или
+    // обновляются данные.
+    OrderUUID uuid.UUID
+}
+
+type GetOrderByUUIDParams struct {
+    // UUID пользователя, для которого запрашиваются или
+    // обновляются данные.
+    OrderUUID uuid.UUID
+}
+
+type OptNilString struct {
+    Value uuid.UUID
+    Set   bool
+    Null  bool
+}
+
+type OptPaymentMethod struct {
+    Value PaymentMethod
+    Set   bool
+}
+
+type CancelOrderParams struct {
+    // UUID пользователя, для которого запрашиваются или
+    // обновляются данные.
+    OrderUUID uuid.UUID
+}
+
+type PayOrderResponse struct {
+    // Уникальный идентификатор транзакции.
+    TransactionUUID uuid.UUID `json:"transaction_uuid"`
+}
+
+type PaymentMethod string
+
+const (
+        PaymentMethodUNKNOWN    PaymentMethod = "UNKNOWN"
+        PaymentMethodCARD      PaymentMethod = "CARD"
+        PaymentMethodSBP        PaymentMethod = "SBP"
+        PaymentMethodCREDITCARD PaymentMethod = "CREDIT_CARD"
+)
+
+type OrderStatus string
+
+const (
+        OrderStatusPENDINGPAYMENT OrderStatus = "PENDING_PAYMENT"
+        OrderStatusPAID           OrderStatus = "PAID"
+        OrderStatusCANCELLED      OrderStatus = "CANCELLED"
+)
+
+type CreateOrderRes interface {
+    createOrderRes()
+}
+
+type PayOrderRes interface {
+    payOrderRes()
+}
+
+type GetOrderByUUIDRes interface {
+    getOrderByUUIDRes()
+}
+
+type CancelOrderRes interface {
+    cancelOrderRes()
+}
+
+
+
+func (PayOrderResponse) payOrderRes() {<span class="cov0" title="0">}</span>
+func (GetOrderByUUIDParams) getOrderByUUIDRes() {<span class="cov0" title="0">}</span>
+func (OrderDto) getOrderByUUIDRes() {<span class="cov0" title="0">}</pre>
+		
+		<pre class="file" id="file9" style="display: none">// В оригинале был update.go, но я не понял как его использовать и для реализации интерфейса нам
+// нужен метод Cancel
+
+package order
+
+import (
+        "context"
+
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+        "github.com/google/uuid"
+)
+
+func (s *OrderRepo) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool) <span class="cov0" title="0">{
+        s.mu.Lock()
+        order, ok := s.orders[orderUUID.String()]
+        s.mu.Unlock()
+        return order, ok
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package order
+
+import (
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+)
+
+
+func (r *OrderRepo) CreateOrder(order *orderRepoModel.OrderDto)<span class="cov0" title="0">{
+        r.mu.Lock()
+        defer r.mu.Unlock()
+        r.orders[order.OrderUUID.String()] = order
+}</span>
+
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package order
+
+import (
+        "context"
+
+
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+        "github.com/google/uuid"
+)
+
+func (s *OrderRepo) GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool) <span class="cov0" title="0">{
+        s.mu.Lock()
+        order, ok := s.orders[orderUUID.String()]
+        s.mu.Unlock()
+
+        return order, ok
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package order
+
+import (
+        "context"
+        "log"
+
+        // orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+        orderErr "github.com/PhilSuslov/homework/order/internal/model"
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+        orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+
+        "github.com/google/uuid"
+)
+
+func (s *OrderRepo) PayOrderCreate(ctx context.Context, req *orderRepoModel.PayOrderRequest, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool) <span class="cov0" title="0">{
+        s.mu.Lock()
+        order, ok := s.orders[orderUUID.String()]
+        s.mu.Unlock()
+        return order, ok
+}</span>
+
+func (s *OrderRepo) PayOrder(orderUUID uuid.UUID, uuidPay uuid.UUID, paymentMethod string) (*string, error) <span class="cov0" title="0">{
+        s.mu.Lock()
+        order, ok := s.orders[orderUUID.String()]
+        if !ok </span><span class="cov0" title="0">{
+                return nil, orderErr.ErrNotFound
+        }</span>
+        <span class="cov0" title="0">var err error
+
+        order.Status = orderRepoModel.OrderStatusPAID
+        order.TransactionUUID.Value, err = uuid.Parse(uuidPay.String())
+        order.PaymentMethod.Value = orderRepoConv.PaymentMethodToRepo(paymentMethod)
+        log.Println("=== Статус оплаты должен быть ===", s.orders)
+        s.mu.Unlock()
+
+        resp := order.TransactionUUID.Value.String()
+        // resp := &amp;orderRepoModel.PayOrderResponse{TransactionUUID: order.TransactionUUID.Value }
+
+        return &amp;resp, err</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package order
+
+import (
+        "sync"
+
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+        def "github.com/PhilSuslov/homework/order/internal/repository"
+
+)
+
+var _ def.OrderRepository = (*OrderRepo)(nil)
+
+type OrderRepo struct {
+        mu     sync.RWMutex
+        orders map[string]*orderRepoModel.OrderDto
+}
+
+func NewOrderRepo() *OrderRepo <span class="cov0" title="0">{
+        return &amp;OrderRepo{
+                orders:          make(map[string]*orderRepoModel.OrderDto),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package order
+
+import (
+        "context"
+
+        orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+        orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
+
+        "google.golang.org/grpc/codes"
+        "google.golang.org/grpc/status"
+        "github.com/google/uuid"
+)
+
+func (s *OrderService) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (error)<span class="cov10" title="3">{
+        order, ok := s.orderService.CancelOrder(ctx, orderUUID)
+        if !ok </span><span class="cov1" title="1">{
+                return status.Error(codes.NotFound, "order not found")
+        }</span>
+
+        <span class="cov6" title="2">if order.Status == orderRepoModel.OrderStatus(orderServiceModel.OrderStatusPAID)</span><span class="cov1" title="1">{
+                return status.Error(codes.Unknown, "Conflict")
+        }</span>
+
+        <span class="cov1" title="1">order.Status = orderRepoModel.OrderStatus(orderServiceModel.OrderStatusCANCELLED)
+
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package order
+
+import (
+        "context"
+        "log"
+
+        // orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+        orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+        orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+        inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
+
+        "github.com/google/uuid"
+        "google.golang.org/grpc/codes"
+        "google.golang.org/grpc/status"
+)
+
+func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceModel.CreateOrderRequest) (orderServiceModel.CreateOrderResponse, error) <span class="cov1" title="1">{
+        if request.UserUUID == uuid.Nil || len(request.UserUUID) == 0 </span><span class="cov0" title="0">{
+                return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error")
+        }</span>
+
+        <span class="cov1" title="1">strUUID := make([]string, len(request.PartUuids))
+        for i, v := range request.PartUuids </span><span class="cov10" title="2">{
+                strUUID[i] = v.String()
+        }</span>
+
+        //1. Запрашиваем детали из Inventory
+        <span class="cov1" title="1">partsResp, err := s.inventoryClient.ListParts(ctx, &amp;inventoryV1.ListPartsRequest{
+                Filter: &amp;inventoryV1.PartsFilter{
+                        Uuids: strUUID,
+                },
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("Inventory ListParts error: %v", err)
+                return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error: %v", err)
+        }</span>
+
+        <span class="cov1" title="1">log.Printf("Inventory ListParts response: %+v", partsResp)
+
+        // 2. Проверяем, что все детали найдены
+        if len(partsResp.Parts) != len(request.PartUuids) </span><span class="cov0" title="0">{
+                log.Printf("Not all parts found: expected=%d, got=%d", len(request.PartUuids), len(partsResp.Parts))
+                return orderServiceModel.CreateOrderResponse{}, status.Error(codes.NotFound, "some parts not found")
+        }</span>
+
+        // 3. Считаем цену
+        <span class="cov1" title="1">var total_price float64
+        for _, p := range partsResp.Parts </span><span class="cov10" title="2">{
+                log.Printf("Part: UUID=%s, Price=%f", p.Uuid, p.Price)
+                total_price += p.Price
+        }</span>
+        <span class="cov1" title="1">log.Printf("Total price calculated: %f", total_price)
+
+        orderUUID := uuid.New()
+
+        order := &amp;orderServiceModel.OrderDto{
+                OrderUUID:  orderUUID,
+                UserUUID:   request.UserUUID,
+                PartUuids:  request.PartUuids,
+                TotalPrice: total_price,
+                Status:     orderServiceModel.OrderStatusPENDINGPAYMENT,
+        }
+
+        // ans := orderRepoConv.OrderDtoToService(order)
+        s.orderService.CreateOrder(orderRepoConv.OrderDtoToRepo(order))
+
+        return orderServiceModel.CreateOrderResponse{
+                OrderUUID:  order.OrderUUID,
+                TotalPrice: total_price,
+        }, nil</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package order
+
+import (
+        "context"
+        "log"
+
+        orderModel "github.com/PhilSuslov/homework/order/internal/model"
+
+        orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+
+        "google.golang.org/grpc/codes"
+        "google.golang.org/grpc/status"
+        "github.com/google/uuid"
+)
+
+func (s *OrderService) GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderModel.OrderDto, error) <span class="cov10" title="2">{
+
+        order, ok := s.orderService.GetOrderByUUID(ctx, orderUUID) 
+        if !ok </span><span class="cov1" title="1">{
+                log.Println("Order not found in map!")
+                return nil, status.Error(codes.NotFound, "order not found")
+        }</span>
+
+        <span class="cov1" title="1">ans := orderRepoConv.OrderDtoToService(order)
+
+        return ans, nil</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package order
+
+import (
+        "context"
+
+        orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
+)
+
+func (s *OrderService) NewError(ctx context.Context, err error) *orderServiceModel.GenericErrorStatusCode <span class="cov0" title="0">{
+        // Тут можно возвращать любую реализацию ErrorRes, например:
+        var Err orderServiceModel.GenericErrorStatusCode
+        Err.StatusCode = 500
+        Err.Response.Code.Value = 500
+        Err.Response.Message.Value = err.Error()
+        return &amp;orderServiceModel.GenericErrorStatusCode{
+                StatusCode: Err.StatusCode,
+                Response:   Err.Response,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package order
+
+import (
+        "context"
+
+        orderModel "github.com/PhilSuslov/homework/order/internal/model"
+        orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+        paymentV1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+
+        "google.golang.org/grpc/codes"
+        "google.golang.org/grpc/status"
+
+        "github.com/google/uuid"
+)
+
+func (s *OrderService) PayOrder(ctx context.Context,
+        req *orderModel.PayOrderRequest, orderUUID uuid.UUID) (orderModel.PayOrderResponse, error) <span class="cov10" title="4">{
+
+        order, ok := s.orderService.PayOrderCreate(ctx, orderRepoConv.PayOrderRequestToRepo(req), orderUUID)
+        if !ok </span><span class="cov1" title="1">{
+                return orderModel.PayOrderResponse{}, status.Error(codes.NotFound, "order not found")
+        }</span>
+
+        <span class="cov8" title="3">if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusPAID) </span><span class="cov1" title="1">{
+                return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order already paid")
+        }</span>
+
+        <span class="cov5" title="2">if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusCANCELLED) </span><span class="cov1" title="1">{
+                return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order cancelled")
+        }</span>
+
+        //Проверка метода оплаты
+        <span class="cov1" title="1">var pm paymentV1.PaymentMethod
+        switch req.PaymentMethod </span>{
+        case "CARD":<span class="cov1" title="1">
+                pm = 1</span>
+        case "SBP":<span class="cov0" title="0">
+                pm = 2</span>
+        case "CREDIT_CARD":<span class="cov0" title="0">
+                pm = 3</span>
+        case "INVESTOR_MONEY":<span class="cov0" title="0">
+                pm = 4</span>
+        default:<span class="cov0" title="0">
+                pm = 0</span>
+        }
+
+        // Вызываем PaymentService
+        <span class="cov1" title="1">payResp, err := s.paymentClient.PayOrder(ctx, &amp;paymentV1.PayOrderRequest{
+                OrderUuid:     req.OrderUUID.String(),
+                UserUuid:      order.UserUUID.String(),
+                PaymentMethod: pm,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                return orderModel.PayOrderResponse{}, status.Errorf(codes.Internal, "payment error: %v", err)
+        }</span>
+        <span class="cov1" title="1">transactionUUID := payResp.TransactionUuid
+        paymentMethod := req.PaymentMethod
+
+        transactionuuid, _ := uuid.Parse(transactionUUID)
+
+        resp, err := s.orderService.PayOrder(order.OrderUUID, transactionuuid, string(paymentMethod))
+        if resp == nil &amp;&amp; err != nil </span><span class="cov0" title="0">{
+                return orderModel.PayOrderResponse{}, err
+        }</span>
+        <span class="cov1" title="1">if resp == nil </span><span class="cov0" title="0">{
+                return orderModel.PayOrderResponse{}, status.Error(codes.Internal, "empty response from repository")
+        }</span>
+        <span class="cov1" title="1">respConv := orderRepoConv.PayOrderResponseToService(*resp)
+        return respConv, err</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package order
+
+import (
+        repo "github.com/PhilSuslov/homework/order/internal/repository"
+        def "github.com/PhilSuslov/homework/order/internal/service"
+        inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
+        paymentV1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+
+)
+
+var _ def.OrderService = (*OrderService)(nil)
+
+type OrderService struct {
+        inventoryClient inventoryV1.InventoryServiceClient
+        paymentClient   paymentV1.PaymentServiceClient
+        
+
+        orderService repo.OrderRepository
+}
+
+func NewOrderService(inventoryClient inventoryV1.InventoryServiceClient,
+        paymentClient paymentV1.PaymentServiceClient, repo repo.OrderRepository) *OrderService <span class="cov0" title="0">{
+        return &amp;OrderService{
+                inventoryClient: inventoryClient,
+                paymentClient:   paymentClient,
+                orderService:    repo,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package payment
+
+import (
+        "context"
+        "log"
+        "errors"
+
+        payment_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+        "github.com/google/uuid"
+)
+
+func (s *service) PayOrder(ctx context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) <span class="cov10" title="4">{
+        if req == nil </span><span class="cov1" title="1">{
+                return nil, errors.New("request is nil")
+        }</span>
+        
+        <span class="cov8" title="3">tx := uuid.New()
+        log.Println("PAY ORDER is PAYMENT ")
+        log.Printf("Оплата прошла успешно, transaction_uuid: %s", tx)
+
+        return &amp;payment_v1.PayOrderResponse{
+                TransactionUuid: tx.String(),
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package payment
+
+import (
+        def "github.com/PhilSuslov/homework/payment/internal/service"
+)
+
+var _ def.PayService = (*service)(nil)
+
+type service struct {
+}
+
+func NewPaymentService() *service <span class="cov10" title="4">{
+        return &amp;service{}
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

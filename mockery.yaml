@@ -1,0 +1,32 @@
+with-expecter: true
+filename: "mock_{{.InterfaceNameSnake}}.go"
+outpkg: "mocks"
+mockname: "{{.InterfaceName}}"
+resolve-type-alias: False
+issue-845-fix: True
+
+packages:
+  github.com/PhilSuslov/homework/payment/internal/service:
+    config:
+      include-regex: ".*Service"
+      dir: "internal/service"
+
+  github.com/PhilSuslov/homework/inventory/internal/service:
+    config:
+      include-regex: ".*Service"
+      dir: "internal/service"
+
+  github.com/PhilSuslov/homework/inventory/internal/repository:
+    config:
+      include-regex: ".*Repository"
+      dir: "internal/repository"
+
+  github.com/PhilSuslov/homework/order/internal/repository:
+    config:
+      include-regex: ".*Repository"
+      dir: "internal/repository"
+
+  github.com/PhilSuslov/homework/order/internal/service:
+    config:
+      include-regex: ".*Service"
+      dir: "internal/service"

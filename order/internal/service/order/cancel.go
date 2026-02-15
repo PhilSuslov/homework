@@ -23,5 +23,6 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (er
 
 	order.Status = orderRepoModel.OrderStatus(orderServiceModel.OrderStatusCANCELLED)
 
-	return status.Error(codes.Canceled, "No content")
+
+	return nil
 }

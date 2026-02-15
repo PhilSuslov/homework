@@ -7,10 +7,11 @@ import (
 	"github.com/google/uuid"
 )
 
-// Проверить Response и Res!
+
 type OrderRepository interface {
 	CreateOrder(order *orderRepoModel.OrderDto)
 	PayOrder(orderUUID uuid.UUID, payUUID uuid.UUID, paymentMethod string) (*string, error)
+	PayOrderCreate(ctx context.Context, req *orderRepoModel.PayOrderRequest, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
 	GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
 	CancelOrder(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
 }

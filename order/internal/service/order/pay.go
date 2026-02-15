@@ -17,7 +17,6 @@ func (s *OrderService) PayOrder(ctx context.Context,
 	req *orderModel.PayOrderRequest, orderUUID uuid.UUID) (orderModel.PayOrderResponse, error) {
 
 	order, ok := s.orderService.PayOrderCreate(ctx, orderRepoConv.PayOrderRequestToRepo(req), orderUUID)
-
 	if !ok {
 		return orderModel.PayOrderResponse{}, status.Error(codes.NotFound, "order not found")
 	}
@@ -60,6 +59,12 @@ func (s *OrderService) PayOrder(ctx context.Context,
 	transactionuuid, _ := uuid.Parse(transactionUUID)
 
 	resp, err := s.orderService.PayOrder(order.OrderUUID, transactionuuid, string(paymentMethod))
+	if resp == nil && err != nil {
+		return orderModel.PayOrderResponse{}, err
+	}
+	if resp == nil {
+		return orderModel.PayOrderResponse{}, status.Error(codes.Internal, "empty response from repository")
+	}
 	respConv := orderRepoConv.PayOrderResponseToService(*resp)
 	return respConv, err
 

@@ -17,7 +17,7 @@ func (s *OrderService) GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) 
 
 	order, ok := s.orderService.GetOrderByUUID(ctx, orderUUID) 
 	if !ok {
-		log.Printf("order.OrderUUID - %v. Order not found in map!", order.OrderUUID)
+		log.Println("Order not found in map!")
 		return nil, status.Error(codes.NotFound, "order not found")
 	}
 
