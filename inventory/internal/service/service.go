@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/PhilSuslov/homework/inventory/internal/model"
+	// repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
 type InventoryService interface {

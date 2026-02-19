@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"log"
 
 	orderModel "github.com/PhilSuslov/homework/order/internal/model"
 	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
@@ -58,8 +59,9 @@ func (s *OrderService) PayOrder(ctx context.Context,
 
 	transactionuuid, _ := uuid.Parse(transactionUUID)
 
-	resp, err := s.orderService.PayOrder(order.OrderUUID, transactionuuid, string(paymentMethod))
+	resp, err := s.orderService.PayOrder(ctx, order.OrderUUID, transactionuuid, string(paymentMethod))
 	if resp == nil && err != nil {
+		log.Println("Ошибка в service->pay")
 		return orderModel.PayOrderResponse{}, err
 	}
 	if resp == nil {

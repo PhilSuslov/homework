@@ -1,31 +1,39 @@
 package part
 
 import (
-	"sync"
-
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	def "github.com/PhilSuslov/homework/inventory/internal/repository"
-	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
-var _ def.InventoryRepository = (*Repository)(nil)
+var _ def.InventoryRepository = (*NoteRepository)(nil)
 
-type Repository struct {
-	mu    sync.RWMutex
-	Parts map[string]*repoModel.Part
+type NoteRepository struct {
+	collection *mongo.Collection
+	// Parts map[string]*repoModel.Part
 }
 
-func NewRepository() *Repository {
-	repo := &Repository{
-		Parts: make(map[string]*repoModel.Part),
+func NewNoteRepository(collection *mongo.Collection) *NoteRepository {
+	// 	collection := db.Collection("notes")
+	//
+	// 	indexModels := []mongo.IndexModel{
+	// 		{
+	// 			Keys:    bson.D{{Key: "body.name", Value: 1}},
+	// 			Options: options.Index().SetUnique(false),
+	// 		},
+	// 	}
+	//
+	// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// 	defer cancel()
+	//
+	// 	_, err := collection.Indexes().CreateMany(ctx, indexModels)
+	// 	if err != nil {
+	// 		log.Panic(err)
+	// 	}
+	repo := &NoteRepository{
+		collection: collection,
 	}
 
-	id := uuid.New().String()
-	repo.Parts[id] = &repoModel.Part{
-		Uuid:  id,
-		Name:  "Test Part",
-		Price: 100.0,
-	}
+
 	return repo
 }

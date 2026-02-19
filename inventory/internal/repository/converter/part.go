@@ -38,6 +38,14 @@ func GetPartResponseToModel(repo repoModel.Part) model.Part{
 	}
 }
 
+
+func GetPartResponseNoteToModel(repo repoModel.Note) model.Note{
+	return model.Note{
+		OrderUUID: repo.OrderUUID,
+		Body: GetPartResponseToModel(repo.Body),
+	}
+}
+
 func PartsFilterToModel(repo repoModel.PartsFilter) model.PartsFilter{
 	return model.PartsFilter{
 		Uuids: repo.Uuids,
@@ -100,6 +108,14 @@ func ListPartsResponseToModel(repo []repoModel.Part) []model.Part{
 	res := make([]model.Part, 0, len(repo))
 	for _, c := range repo{
 		res = append(res, GetPartResponseToModel(c))
+	}
+	return res
+}
+
+func ListPartsResponseNotesToModel(repo []repoModel.Note) []model.Part{
+	res := make([]model.Part, 0, len(repo))
+	for _, c := range repo{
+		res = append(res, GetPartResponseToModel(c.Body))
 	}
 	return res
 }

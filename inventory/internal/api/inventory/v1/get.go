@@ -16,7 +16,7 @@ func (a *api) GetPart(ctx context.Context, req *inventory_v1.GetPartRequest) (*i
 	}
 
 	return &inventory_v1.GetPartResponse{
-		Part: conv.InventoryGetPartResponseToProto(part.Part),
+		Part: conv.InventoryGetPartResponseToProto(part.Part.Body),
 	}, nil
 
 }

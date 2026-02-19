@@ -1,7 +1,16 @@
 package model
 
-import "time"
+import (
+	"time"
 
+	// "go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Note struct{
+	// ID primitive.ObjectID `bson:"_id, omitempty"`
+	OrderUUID string `bson:"_id"`
+	Body Part `bson:"body"`
+}
 
 // GetPart ответ 
 type GetPartRequest struct {
@@ -10,7 +19,7 @@ type GetPartRequest struct {
 
 // GetPart ответ 
 type GetPartResponse struct {
-	Part Part
+	Part Note
 }
 
 // PartsFilter для фильтрации в ListParts 
@@ -29,7 +38,7 @@ type ListPartsRequest struct {
 
 // ListParts ответ 
 type ListPartsResponse struct {
-	Parts []Part
+	Parts []Note
 }
 
 // Part структура 

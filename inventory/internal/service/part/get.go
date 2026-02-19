@@ -2,18 +2,19 @@ package part
 
 import (
 	"context"
+	"log"
 
 	"github.com/PhilSuslov/homework/inventory/internal/model"
-	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+	serviceConv "github.com/PhilSuslov/homework/inventory/internal/service/converter"
 )
 
 func (s *service) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) {
-	part, err := s.repository.GetPart(ctx, info)
+	part, err := s.repository.GetPart(ctx, serviceConv.GetPartRequestToModel(info))
 
 	if err != nil {
-		return model.GetPartResponse{}, repoModel.ErrNotFound
+		return model.GetPartResponse{}, model.ErrNotFound
 	}
-
-	return part, nil
+	log.Printf(part.Part.OrderUUID, "PASS GET PART Service")
+	return serviceConv.GetPartResponseNoteToModel(part), nil
 
 }

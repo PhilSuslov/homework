@@ -2,23 +2,28 @@ package part
 
 import (
 	"context"
+	"errors"
+	"log"
 
-	"github.com/PhilSuslov/homework/inventory/internal/model"
-	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r *Repository) GetPart(ctx context.Context, info model.GetPartRequest) (model.GetPartResponse, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	part, ok := r.Parts[info.Uuid]
-	if !ok {
-		return model.GetPartResponse{}, repoModel.ErrNotFound
+func (r *NoteRepository) GetPart(ctx context.Context, info repoModel.GetPartRequest) (repoModel.GetPartResponse, error) {
+	var note repoModel.Note
+	// log.Println(info.Uuid)
+	// log.Println(bson.M{"body.uuid": info.Uuid})
+	err := r.collection.FindOne(ctx, bson.M{"body.uuid": info.Uuid}).Decode(&note)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return repoModel.GetPartResponse{}, repoModel.ErrNotFound
+		}
+		return repoModel.GetPartResponse{}, err
 	}
-
-	return model.GetPartResponse{
-		Part: repoConverter.GetPartResponseToModel(*part),
-	}, nil
+	log.Println("------- GetPart NoteRepo PASS ------------")
+	return repoModel.GetPartResponse{
+		Part: note,
+	}, err
 
 }

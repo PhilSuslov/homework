@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	"github.com/PhilSuslov/homework/inventory/internal/model"
+	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
 )
 
 type InventoryRepository interface {
-	GetPart(ctx context.Context, req model.GetPartRequest) (model.GetPartResponse, error) 
-	ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error)
+	GetPart(ctx context.Context, info repoModel.GetPartRequest) (repoModel.GetPartResponse, error)
+	ListParts(ctx context.Context, req repoModel.ListPartsRequest) (repoModel.ListPartsResponse, error)
 }

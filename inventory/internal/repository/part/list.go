@@ -2,26 +2,40 @@ package part
 
 import (
 	"context"
+	"log"
 
-	"github.com/PhilSuslov/homework/inventory/internal/model"
-	repoConverter "github.com/PhilSuslov/homework/inventory/internal/repository/converter"
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (r *Repository) ListParts(ctx context.Context, req model.ListPartsRequest) (model.ListPartsResponse, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+func (r *NoteRepository) ListParts(ctx context.Context, req repoModel.ListPartsRequest) (repoModel.ListPartsResponse, error) {
+	var result []repoModel.Note
+	// rp := repoConverter.ListPartsRequestToRepoModel(req)
+	cursor, err := r.collection.Find(ctx, bson.M{})
+	if err != nil {
+		return repoModel.ListPartsResponse{}, err
+	}
 
-	var result []repoModel.Part
-	rp := repoConverter.ListPartsRequestToRepoModel(req)
+	defer func() {
+		cerr := cursor.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close cursor: %v\n", cerr)
+		}
+	}()
 
-	for _, part := range r.Parts {
-		if matchFilterList(*part, &rp) {
-			result = append(result, *part)
+	var notes []repoModel.Note
+	err = cursor.All(ctx, &notes)
+	if err != nil {
+		return repoModel.ListPartsResponse{}, err
+	}
+
+	for _, part := range notes {
+		if matchFilterList(part.Body, &req) {
+			result = append(result, part)
 		}
 	}
-	return model.ListPartsResponse{
-		Parts: repoConverter.ListPartsResponseToModel(result),
+	return repoModel.ListPartsResponse{
+		Parts: result,
 	}, nil
 }
 

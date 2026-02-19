@@ -60,9 +60,10 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceMod
 		TotalPrice: total_price,
 		Status:     orderServiceModel.OrderStatusPENDINGPAYMENT,
 	}
+	log.Println("order is CreateOrder Service",order)
 
 	// ans := orderRepoConv.OrderDtoToService(order)
-	s.orderService.CreateOrder(orderRepoConv.OrderDtoToRepo(order))
+	s.orderService.CreateOrder(ctx, orderRepoConv.OrderDtoToRepo(order))
 
 	return orderServiceModel.CreateOrderResponse{
 		OrderUUID:  order.OrderUUID,

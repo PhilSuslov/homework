@@ -8,8 +8,18 @@ type GetPartRequest struct {
 }
 
 // GetPart ответ
+// type GetPartResponse struct {
+// 	Part Part
+// }
+
 type GetPartResponse struct {
-	Part Part
+	Part Note
+}
+
+type Note struct{
+	// ID primitive.ObjectID `bson:"_id, omitempty"`
+	OrderUUID string `bson:"_id"`
+	Body Part `bson:"body"`
 }
 
 // PartsFilter для фильтрации в ListParts
@@ -28,7 +38,7 @@ type ListPartsRequest struct {
 
 // ListParts ответ
 type ListPartsResponse struct {
-	Parts []Part
+	Parts []Note
 }
 
 // Part структура

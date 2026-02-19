@@ -17,6 +17,9 @@ import (
 	orderRepo "github.com/PhilSuslov/homework/order/internal/repository/order"
 	orderService "github.com/PhilSuslov/homework/order/internal/service/order"
 	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 const (
@@ -36,6 +39,34 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 }
 
 func main() {
+	ctx := context.Background()
+	
+	conn, err := pgx.Connect(ctx, "postgres://demo:demo@localhost:5432/order-service")
+	if err != nil{
+		log.Printf("failed to connect to database: %v\n", err)
+		return
+	}
+	defer func(){
+		cerr := conn.Close(ctx)
+		if cerr != nil{
+			log.Printf("failed to close connection: %v\n", err)
+			return
+		}
+	}()
+
+	err = conn.Ping(ctx)
+	if err != nil{
+		log.Printf("База данных недоступна: %v\n", err)
+		return
+	}
+
+	migrationsDir := "../migrations"
+	migrationsRunner := orderRepo.NewMigrator(stdlib.OpenDB(*conn.Config().Copy()), migrationsDir)
+
+	err = migrationsRunner.Up()
+	if err != nil{
+		log.Printf("Ошибка миграции базы данных: %v\n", err)
+	}
 
 	// ---------------- Order service ----------------
 	paymentClient, payConn, err := orderClientPay.NewPaymentClient()
@@ -50,7 +81,7 @@ func main() {
 	}
 	defer invConn.Close()
 
-	repo := orderRepo.NewOrderRepo()
+	repo := orderRepo.NewOrderRepo(conn)
 	orderService := orderService.NewOrderService(inventoryClient, paymentClient, repo)
 	handler := orderAPI.NewOrderHandler(orderService)
 

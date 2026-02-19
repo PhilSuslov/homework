@@ -39,6 +39,61 @@ func InventoryGetPartResponseToModel(repo *inventory_v1.Part) model.Part {
 	}
 }
 
+func InventoryGetPartResponseNoteToModel(repo *inventory_v1.Part) model.Note {
+	var createdAt *time.Time
+	if repo.CreatedAt != nil {
+		createdAt = lo.ToPtr(repo.CreatedAt.AsTime())
+	}
+
+	var updatedAt *time.Time
+	if repo.UpdatedAt != nil {
+		updatedAt = lo.ToPtr(repo.UpdatedAt.AsTime())
+	}
+
+	return model.Note{
+		Body: model.Part{
+			Uuid:          repo.Uuid,
+			Name:          repo.Name,
+			Description:   repo.Description,
+			Price:         repo.Price,
+			StockQuantity: repo.StockQuantity,
+			Category:      model.Category(repo.Category),
+			Dimensions:    InventoryDimensionsToModel(repo.Dimensions),
+			Manufacturer:  InventoryManufacturerToModel(repo.Manufacturer),
+			Tags:          repo.Tags,
+			CreatedAt:     *createdAt,
+			UpdatedAt:     *updatedAt,
+		},
+	}
+}
+
+func InventoryGetPartResponseToNote(note model.Note) *inventory_v1.Part {
+	var createdAt *timestamppb.Timestamp
+	if &note.Body.CreatedAt != nil {
+		createdAt = timestamppb.New(note.Body.CreatedAt)
+	}
+
+	var updatedAt *timestamppb.Timestamp
+	if &note.Body.UpdatedAt != nil {
+		updatedAt = timestamppb.New(note.Body.UpdatedAt)
+	}
+
+	return &inventory_v1.Part{
+		Uuid:          note.Body.Uuid,
+		Name:          note.Body.Name,
+		Description:   note.Body.Description,
+		Price:         note.Body.Price,
+		StockQuantity: note.Body.StockQuantity,
+		Category:      inventory_v1.Category(note.Body.Category),
+		Dimensions:    InventoryDimensionsToProto(note.Body.Dimensions),
+		Manufacturer:  InventoryManufacturerToProto(note.Body.Manufacturer),
+		Tags:          note.Body.Tags,
+		CreatedAt:     createdAt,
+		UpdatedAt:     updatedAt,
+	}
+}
+
+
 func InventoryGetPartResponseToProto(proto model.Part) *inventory_v1.Part {
 	var createdAt *timestamppb.Timestamp
 	if &proto.CreatedAt != nil {
@@ -108,10 +163,10 @@ func InventoryListPartsRequestToModel(info *inventory_v1.ListPartsRequest) model
 }
 
 func InventoryListPartsResponseToProto(info *inventory_v1.ListPartsResponse) model.ListPartsResponse {
-	parts := make([]model.Part, 0, len(info.Parts))
+	parts := make([]model.Note, 0, len(info.Parts))
 
 	for _, p := range info.Parts {
-		parts = append(parts, InventoryGetPartResponseToModel(p))
+		parts = append(parts, InventoryGetPartResponseNoteToModel(p))
 	}
 
 	return model.ListPartsResponse{
@@ -123,7 +178,7 @@ func InventoryListPartsResponseToModel(info model.ListPartsResponse) *inventory_
 	parts := make([]*inventory_v1.Part, 0, len(info.Parts))
 
 	for _, p := range info.Parts {
-		parts = append(parts, InventoryGetPartResponseToProto(p))
+		parts = append(parts, InventoryGetPartResponseToNote(p))
 	}
 
 	return &inventory_v1.ListPartsResponse{
@@ -164,3 +219,4 @@ func InventoryManufacturerToProto(info model.Manufacturer) *inventory_v1.Manufac
 		Website: info.Website,
 	}
 }
+
