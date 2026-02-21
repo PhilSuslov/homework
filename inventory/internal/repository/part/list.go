@@ -2,15 +2,16 @@ package part
 
 import (
 	"context"
-	"log"
 
 	repoModel "github.com/PhilSuslov/homework/inventory/internal/repository/model"
+	"github.com/PhilSuslov/homework/platform/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func (r *NoteRepository) ListParts(ctx context.Context, req repoModel.ListPartsRequest) (repoModel.ListPartsResponse, error) {
 	var result []repoModel.Note
-	// rp := repoConverter.ListPartsRequestToRepoModel(req)
+
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return repoModel.ListPartsResponse{}, err
@@ -19,13 +20,15 @@ func (r *NoteRepository) ListParts(ctx context.Context, req repoModel.ListPartsR
 	defer func() {
 		cerr := cursor.Close(ctx)
 		if cerr != nil {
-			log.Printf("failed to close cursor: %v\n", cerr)
+			logger.Error(ctx, "failed to close cursor", zap.Error(cerr))
+
 		}
 	}()
 
 	var notes []repoModel.Note
 	err = cursor.All(ctx, &notes)
 	if err != nil {
+		logger.Error(ctx, "failed to cursor.All -> notes", zap.Error(err))
 		return repoModel.ListPartsResponse{}, err
 	}
 

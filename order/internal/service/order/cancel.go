@@ -3,26 +3,19 @@ package order
 import (
 	"context"
 
-	// orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
-	// orderRepoModel "github.com/PhilSuslov/homework/order/internal/repository/model"
-
+	"github.com/PhilSuslov/homework/platform/pkg/logger"
+	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"github.com/google/uuid"
 )
 
-func (s *OrderService) CancelOrder(ctx context.Context, orderUUID uuid.UUID) (error){
+func (s *OrderService) CancelOrder(ctx context.Context, orderUUID uuid.UUID) error {
 	ok := s.orderService.CancelOrder(ctx, orderUUID)
 	if !ok {
+		logger.Error(ctx, "order not found", zap.String("orderUUID", orderUUID.String()))
 		return status.Error(codes.NotFound, "order not found")
 	}
-// 
-// 	if order.Status == orderRepoModel.OrderStatus(orderServiceModel.OrderStatusPAID){
-// 		return status.Error(codes.Unknown, "Conflict")
-// 	}
-// 
-// 	order.Status = orderRepoModel.OrderStatus(orderServiceModel.OrderStatusCANCELLED)
-
 
 	return nil
 }

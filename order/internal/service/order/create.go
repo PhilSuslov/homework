@@ -2,12 +2,12 @@ package order
 
 import (
 	"context"
-	"log"
 
-	// orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 	orderServiceModel "github.com/PhilSuslov/homework/order/internal/model"
 	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+	"github.com/PhilSuslov/homework/platform/pkg/logger"
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
+	"go.uber.org/zap"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -16,6 +16,8 @@ import (
 
 func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceModel.CreateOrderRequest) (orderServiceModel.CreateOrderResponse, error) {
 	if request.UserUUID == uuid.Nil || len(request.UserUUID) == 0 {
+		logger.Error(ctx, "failed to CreateOrder. UserUUID == Nil or len == 0",
+			zap.String("UserUUID", request.UserUUID.String()))
 		return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error")
 	}
 
@@ -31,25 +33,30 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceMod
 		},
 	})
 	if err != nil {
-		log.Printf("Inventory ListParts error: %v", err)
+		logger.Error(ctx, "Inventory ListParts error", zap.Error(err))
 		return orderServiceModel.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error: %v", err)
 	}
 
-	log.Printf("Inventory ListParts response: %+v", partsResp)
+	// log.Printf("Inventory ListParts response: %+v", partsResp)
 
 	// 2. Проверяем, что все детали найдены
 	if len(partsResp.Parts) != len(request.PartUuids) {
-		log.Printf("Not all parts found: expected=%d, got=%d", len(request.PartUuids), len(partsResp.Parts))
+		logger.Error(ctx, "Not all parts found: ", zap.Int("expected= ", len(request.PartUuids)),
+			zap.Int("got", len(partsResp.Parts)))
+		// log.Printf("Not all parts found: expected=%d, got=%d", len(request.PartUuids), len(partsResp.Parts))
 		return orderServiceModel.CreateOrderResponse{}, status.Error(codes.NotFound, "some parts not found")
 	}
 
 	// 3. Считаем цену
 	var total_price float64
 	for _, p := range partsResp.Parts {
-		log.Printf("Part: UUID=%s, Price=%f", p.Uuid, p.Price)
+		logger.Info(ctx, "Parts: ", zap.String("UUID= ", p.Uuid),
+			zap.Float64("Price= ", p.Price))
+		// log.Printf("Part: UUID=%s, Price=%f", p.Uuid, p.Price)
 		total_price += p.Price
 	}
-	log.Printf("Total price calculated: %f", total_price)
+	logger.Info(ctx, "Total price calculated: ", zap.Float64("total_price", total_price))
+	// log.Printf("Total price calculated: %f", total_price)
 
 	orderUUID := uuid.New()
 
@@ -60,9 +67,9 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *orderServiceMod
 		TotalPrice: total_price,
 		Status:     orderServiceModel.OrderStatusPENDINGPAYMENT,
 	}
-	log.Println("order is CreateOrder Service",order)
+	logger.Info(ctx, "order is CreateOrder Service:", zap.Any("order", order))
+	// log.Println("order is CreateOrder Service",order)
 
-	// ans := orderRepoConv.OrderDtoToService(order)
 	s.orderService.CreateOrder(ctx, orderRepoConv.OrderDtoToRepo(order))
 
 	return orderServiceModel.CreateOrderResponse{

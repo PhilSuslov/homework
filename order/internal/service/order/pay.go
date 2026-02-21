@@ -2,11 +2,12 @@ package order
 
 import (
 	"context"
-	"log"
 
 	orderModel "github.com/PhilSuslov/homework/order/internal/model"
 	orderRepoConv "github.com/PhilSuslov/homework/order/internal/repository/converter"
+	"github.com/PhilSuslov/homework/platform/pkg/logger"
 	paymentV1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,14 +20,17 @@ func (s *OrderService) PayOrder(ctx context.Context,
 
 	order, ok := s.orderService.PayOrderCreate(ctx, orderRepoConv.PayOrderRequestToRepo(req), orderUUID)
 	if !ok {
+		logger.Error(ctx, "order not found", zap.Any("order", order))
 		return orderModel.PayOrderResponse{}, status.Error(codes.NotFound, "order not found")
 	}
 
 	if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusPAID) {
+		logger.Error(ctx, "order already paid", zap.Any("order", order))
 		return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order already paid")
 	}
 
 	if order.Status == orderRepoConv.OrderStatusToRepo(orderModel.OrderStatusCANCELLED) {
+		logger.Error(ctx, "order cancelled", zap.Any("order", order))
 		return orderModel.PayOrderResponse{}, status.Error(codes.Canceled, "order cancelled")
 	}
 
@@ -52,6 +56,8 @@ func (s *OrderService) PayOrder(ctx context.Context,
 		PaymentMethod: pm,
 	})
 	if err != nil {
+		logger.Error(ctx, "payment error", zap.Any("payRes", payResp),
+			zap.Error(err))
 		return orderModel.PayOrderResponse{}, status.Errorf(codes.Internal, "payment error: %v", err)
 	}
 	transactionUUID := payResp.TransactionUuid
@@ -61,10 +67,13 @@ func (s *OrderService) PayOrder(ctx context.Context,
 
 	resp, err := s.orderService.PayOrder(ctx, order.OrderUUID, transactionuuid, string(paymentMethod))
 	if resp == nil && err != nil {
-		log.Println("Ошибка в service->pay")
+		logger.Error(ctx, "Ошибка в service -> pay", zap.Any("resp", resp),
+			zap.Error(err))
+
 		return orderModel.PayOrderResponse{}, err
 	}
 	if resp == nil {
+		logger.Error(ctx, "empty response from repository", zap.Error(err))
 		return orderModel.PayOrderResponse{}, status.Error(codes.Internal, "empty response from repository")
 	}
 	respConv := orderRepoConv.PayOrderResponseToService(*resp)
