@@ -8,14 +8,18 @@ import (
 
 var _ def.InventoryRepository = (*NoteRepository)(nil)
 
+const (
+	collectionName = "note"
+)
+
 type NoteRepository struct {
 	collection *mongo.Collection
 }
 
-func NewNoteRepository(collection *mongo.Collection) *NoteRepository {
+func NewNoteRepository(db *mongo.Database) *NoteRepository {
 
 	repo := &NoteRepository{
-		collection: collection,
+		collection: db.Collection(collectionName),
 	}
 
 	return repo

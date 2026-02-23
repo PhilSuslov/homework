@@ -12,7 +12,7 @@ type postgresEnvConfig struct {
 	Database string `env:"POSTGRES_DB,required"`
 	User     string `env:"POSTGRES_USER,required"`
 	Password string `env:"POSTGRES_PASSWORD,required"`
-	// AuthDB   string `env:"MONGO_AUTH_DB,required"`
+	SSLmode  string `env:"POSTGRES_SSL_MODE, required"`
 }
 
 type postgresConfig struct {
@@ -29,13 +29,22 @@ func NewPostgresConfig() (*postgresConfig, error) {
 }
 
 func (cfg *postgresConfig) URI() string {
-	return fmt.Sprintf(
-		"mongo://%s:%s@%s:%s/%s",
+	fmt.Printf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		cfg.raw.User,
 		cfg.raw.Password,
 		cfg.raw.Host,
 		cfg.raw.Port,
 		cfg.raw.Database,
+		cfg.raw.SSLmode)
+
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.raw.User,
+		cfg.raw.Password,
+		cfg.raw.Host,
+		cfg.raw.Port,
+		cfg.raw.Database,
+		cfg.raw.SSLmode,
 	)
 }
 

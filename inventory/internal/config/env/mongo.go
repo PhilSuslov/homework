@@ -30,7 +30,7 @@ func NewMongoConfig() (*mongoConfig, error) {
 
 func (cfg *mongoConfig) URI() string {
 	return fmt.Sprintf(
-		"mongo://%s:%s@%s:%s/%s?authSource=%s",
+		"mongodb://%s:%s@%s:%s/%s?authSource=%s",
 		cfg.raw.User,
 		cfg.raw.Password,
 		cfg.raw.Host,

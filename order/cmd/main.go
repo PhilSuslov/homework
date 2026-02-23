@@ -41,7 +41,7 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 func main() {
 	ctx := context.Background()
 	
-	conn, err := pgx.Connect(ctx, "postgres://demo:demo@localhost:5432/order-service")
+	conn, err := pgx.Connect(ctx, "postgres://demo:demo@localhost:5435/order-service")
 	if err != nil{
 		log.Printf("failed to connect to database: %v\n", err)
 		return

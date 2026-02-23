@@ -4,17 +4,17 @@ import (
 	"database/sql"
 
 	def "github.com/PhilSuslov/homework/order/internal/repository"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pressly/goose/v3"
 )
 
 var _ def.OrderRepository = (*OrderRepo)(nil)
 
 type OrderRepo struct {
-	conn *pgx.Conn
+	conn  *pgxpool.Pool
 }
 
-func NewOrderRepo(conn *pgx.Conn) *OrderRepo {
+func NewOrderRepo(conn *pgxpool.Pool) *OrderRepo {
 	return &OrderRepo{conn: conn}
 
 }
