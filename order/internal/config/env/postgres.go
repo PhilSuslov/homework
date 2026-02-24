@@ -12,7 +12,7 @@ type postgresEnvConfig struct {
 	Database string `env:"POSTGRES_DB,required"`
 	User     string `env:"POSTGRES_USER,required"`
 	Password string `env:"POSTGRES_PASSWORD,required"`
-	SSLmode  string `env:"POSTGRES_SSL_MODE, required"`
+	SSLmode  string `env:"POSTGRES_SSL_MODE,required"`
 }
 
 type postgresConfig struct {

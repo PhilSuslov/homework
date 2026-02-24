@@ -2,15 +2,15 @@ package app
 
 import (
 	"context"
-
+	"log"
+	
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/PhilSuslov/homework/shared/pkg/proto/payment/v1"
+	"github.com/jackc/pgx/v5/stdlib"
 
-	api "github.com/PhilSuslov/homework/order/internal/api/order/v1"
 	"github.com/PhilSuslov/homework/order/internal/repository"
 	"github.com/PhilSuslov/homework/order/internal/service"
 
-	orderV1 "github.com/PhilSuslov/homework/shared/pkg/openapi/order/v1"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	orderRepo "github.com/PhilSuslov/homework/order/internal/repository/order"
@@ -19,7 +19,6 @@ import (
 )
 
 type diContainer struct {
-	orderV1API      orderV1.Handler
 	orderService    service.OrderService
 	orderRepository repository.OrderRepository
 	inventoryClient inventoryV1.InventoryServiceClient
@@ -28,27 +27,55 @@ type diContainer struct {
 	postgresConn *pgxpool.Pool
 }
 
-func NewDiContainer() *diContainer {
-	return &diContainer{}
+func NewDiContainer(ctx context.Context) *diContainer {
+	d := &diContainer{}
+	d.postgresConn = d.PostgresCfg(ctx)
+	return d
 }
 
-func (d *diContainer) OrderV1API(ctx context.Context) orderV1.Handler {
-	if d.orderV1API == nil {
-		d.orderV1API = api.NewAPI(d.PartService(ctx))
-	}
-	return d.orderV1API
-}
-
-func (d *diContainer) PartService(ctx context.Context) service.OrderService {
+func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = orderService.NewOrderService(d.inventoryClient, d.paymentClient, d.PartRepository(ctx))
+		d.orderService = orderService.NewOrderService(d.inventoryClient, d.paymentClient, d.OrderRepository(ctx))
 	}
 	return d.orderService
 }
 
-func (d *diContainer) PartRepository(ctx context.Context) repository.OrderRepository {
+func (d *diContainer) OrderRepository(ctx context.Context) repository.OrderRepository {
 	if d.orderRepository == nil {
+		if d.postgresConn == nil {
+			d.postgresConn = d.PostgresCfg(ctx)
+		}
 		d.orderRepository = orderRepo.NewOrderRepo(d.postgresConn)
 	}
 	return d.orderRepository
+}
+
+func (d *diContainer) PostgresCfg(ctx context.Context) *pgxpool.Pool {
+	if d.postgresConn != nil {
+		return d.postgresConn
+	}
+
+	conn, err := pgxpool.New(ctx, "postgres://demo:demo@localhost:5435/orders?sslmode=disable")
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+
+	// Проверяем доступность базы
+	err = conn.Ping(ctx)
+	if err != nil {
+		log.Fatalf("База данных недоступна: %v", err)
+	}
+
+	// Миграции через Goose
+	migrationsDir := "../migrations"
+	db := stdlib.OpenDB(*conn.Config().ConnConfig)
+	migrationsRunner := orderRepo.NewMigrator(db, migrationsDir)
+
+	err = migrationsRunner.Up()
+	if err != nil {
+		log.Fatalf("Ошибка миграции базы данных: %v", err)
+	}
+
+	d.postgresConn = conn
+	return d.postgresConn
 }

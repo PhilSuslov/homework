@@ -19,7 +19,7 @@ const configPath = "../../deploy/compose/payment/.env"
 func main() {
 	err := config.Load(configPath)
 	if err != nil {
-		panic(fmt.Errorf("failed to load config order: %v", err))
+		panic(fmt.Errorf("failed to load config payment: %v", err))
 	}
 	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer appCancel()

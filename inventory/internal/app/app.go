@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/PhilSuslov/homework/inventory/internal/config"
@@ -35,6 +36,10 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
+	if err := a.diContainer.InitFakeData(ctx); err != nil{
+		log.Printf("Failed to init fake data: %v", err)
+		return err
+	}
 	return a.runGRPCServer(ctx)
 }
 
@@ -99,7 +104,12 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	reflection.Register(a.grpcServer)
 	health.RegisterService(a.grpcServer)
 
-	inventoryV1.RegisterInventoryServiceServer(a.grpcServer, a.diContainer.InventoryV1API(ctx))
+	srv, err  := a.diContainer.InventoryV1API(ctx)
+	if err != nil{
+		log.Printf("Failed to a.diContainer.InventoryV1API(ctx): %v", err)
+		return err
+	}
+	inventoryV1.RegisterInventoryServiceServer(a.grpcServer, srv)
 	return nil
 }
 

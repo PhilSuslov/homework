@@ -9,7 +9,7 @@ import (
 
 
 type OrderRepository interface {
-	CreateOrder(ctx context.Context, order *orderRepoModel.OrderDto)
+	CreateOrder(ctx context.Context, order *orderRepoModel.OrderDto) error
 	PayOrder(ctx context.Context, orderUUID uuid.UUID, uuidPay uuid.UUID, paymentMethod string) (*string, error)
 	PayOrderCreate(ctx context.Context, req *orderRepoModel.PayOrderRequest, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)
 	GetOrderByUUID(ctx context.Context, orderUUID uuid.UUID) (*orderRepoModel.OrderDto, bool)

@@ -10,11 +10,11 @@ import (
 var appConfig *config
 
 type config struct {
-	Logger      LoggerConfig
-	PaymentGRPC paymentGRPCConfig
+	Logger        LoggerConfig
+	PaymentGRPC   paymentGRPCConfig
 	InventoryGRPC inventoryGRPCConfig
-	OrderHTTP orderHTTPConfig
-	PostgresCfg PostgresConfig
+	OrderHTTP     orderHTTPConfig
+	PostgresCfg   PostgresConfig
 }
 
 func Load(path ...string) error {
@@ -34,26 +34,26 @@ func Load(path ...string) error {
 	}
 
 	inventoryGRPCcfg, err := env.NewInventoryGRPCConfig()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	orderHTTPCfg, err := env.NewOrderHTTPConfig()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	postgresCfg, err := env.NewPostgresConfig()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	appConfig = &config{
-		Logger:      loggerCfg,
-		PaymentGRPC: paymentGRPCCfg,
+		Logger:        loggerCfg,
+		PaymentGRPC:   paymentGRPCCfg,
 		InventoryGRPC: inventoryGRPCcfg,
-		OrderHTTP: orderHTTPCfg,
-		PostgresCfg: postgresCfg,
+		OrderHTTP:     orderHTTPCfg,
+		PostgresCfg:   postgresCfg,
 	}
 
 	return nil
