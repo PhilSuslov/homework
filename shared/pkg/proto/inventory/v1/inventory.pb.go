@@ -13,7 +13,6 @@ import (
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
 )
 
 const (
@@ -499,7 +498,7 @@ func (*PartsFilter) Descriptor() ([]byte, []int) {
 	return file_inventory_v1_inventory_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *PartsFilter) GetUuids() []string  {
+func (x *PartsFilter) GetUuids() []string {
 	if x != nil {
 		return x.Uuids
 	}

@@ -14,15 +14,16 @@ type OrderService struct {
 	inventoryClient inventoryV1.InventoryServiceClient // Для красоты надо было использовать inventoryV1.ServiceClient Так как по пакету уже понятно какой это сервис
 	paymentClient   paymentV1.PaymentServiceClient // Для красоты надо было использовать paymentV1.ServiceClient Так как по пакету уже понятно какой это сервис
 	
-
+	orderProducerService def.OrderProducerService
 	orderService repo.OrderRepository
 }
 
 func NewOrderService(inventoryClient inventoryV1.InventoryServiceClient,
-	paymentClient paymentV1.PaymentServiceClient, repo repo.OrderRepository) *OrderService {
+	paymentClient paymentV1.PaymentServiceClient, orderProducerService def.OrderProducerService, repo repo.OrderRepository) *OrderService {
 	return &OrderService{
 		inventoryClient: inventoryClient,
 		paymentClient:   paymentClient,
+		orderProducerService: orderProducerService,
 		orderService:    repo,
 	}
 }

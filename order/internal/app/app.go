@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/PhilSuslov/homework/order/internal/config"
+	orderProducer "github.com/PhilSuslov/homework/order/internal/service/producer/order_producer"
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
 	"go.uber.org/zap"
@@ -111,11 +112,14 @@ func (a *App) initApp(ctx context.Context) error {
 		return err
 	}
 
+	// --- producer ---
+	producer := orderProducer.NewService(a.diContainer.OrderPaidProducer())
+
 	// --- repository ---
 	repo := orderRepo.NewOrderRepo(a.diContainer.postgresConn)
 
 	// --- service ---
-	orderSvc := orderService.NewOrderService(inventoryClient, paymentClient, repo)
+	orderSvc := orderService.NewOrderService(inventoryClient, paymentClient, producer, repo)
 
 	// --- handler ---
 	handler := orderAPI.NewOrderHandler(orderSvc)
