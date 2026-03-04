@@ -15,13 +15,15 @@ var _ def.ConsumerService = (*service)(nil)
 type service struct {
 	assemblyConsumer kafka.Consumer
 	assemblyDecoder  kafkaConverter.AssemblyDecoder
+	assemblyProducer kafka.Producer
 }
 
 func NewService(assemblyConsumer kafka.Consumer,
-	assemblyDecoder kafkaConverter.AssemblyDecoder) *service {
+	assemblyDecoder kafkaConverter.AssemblyDecoder, assemblyProducer kafka.Producer) *service {
 	return &service{
 		assemblyConsumer: assemblyConsumer,
 		assemblyDecoder:  assemblyDecoder,
+		assemblyProducer: assemblyProducer,
 	}
 }
 

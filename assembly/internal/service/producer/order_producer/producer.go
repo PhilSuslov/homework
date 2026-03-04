@@ -12,11 +12,11 @@ import (
 )
 
 
-
-const (
-	brokerAddress = "localhost:9092" // Загрузить из .env
-	topicName = "test-topic"
-)
+// 
+// const (
+// 	brokerAddress = "localhost:9092" // Загрузить из .env
+// 	topicName = "test-topic"
+// )
 
 type service struct{
 	assemblyRecordedProducer  kafka.Producer

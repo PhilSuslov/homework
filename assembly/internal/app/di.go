@@ -8,6 +8,7 @@ import (
 
 	"github.com/PhilSuslov/homework/assembly/internal/config"
 	orderconsumer "github.com/PhilSuslov/homework/assembly/internal/service/consumer/order_consumer"
+	orderProducer "github.com/PhilSuslov/homework/assembly/internal/service/producer/order_producer"
 
 	kafkaConverter "github.com/PhilSuslov/homework/assembly/internal/converter/kafka"
 	decode "github.com/PhilSuslov/homework/assembly/internal/converter/kafka/decode"
@@ -24,6 +25,7 @@ type diContainer struct {
 	consumerGroup     sarama.ConsumerGroup
 	orderPaidConsumer wrappedKafka.Consumer
 	orderConsumerService service.ConsumerService
+	orderProducerService service.AssemblyProducerService
 
 	orderAssemblyDecoder  kafkaConverter.AssemblyDecoder
 	syncProducer          sarama.SyncProducer
@@ -38,7 +40,7 @@ func (d *diContainer) SyncProducer() sarama.SyncProducer {
 	if d.syncProducer == nil {
 		p, err := sarama.NewSyncProducer(
 			config.AppConfig().Kafka.Brokers(),
-			config.AppConfig().OrderPaidConsumer.Config(),
+			config.AppConfig().OrderAssemblyProducer.Config(),
 		)
 		if err != nil {
 			panic(fmt.Sprintf("failed to create sync producer: %s\n", err.Error()))
@@ -61,6 +63,7 @@ func (d *diContainer) OrderAssemblyProducer() wrappedKafka.Producer {
 			config.AppConfig().OrderAssemblyProducer.Topic(),
 			logger.Logger(),
 		)
+		
 	}
 	return d.orderAssemblyProducer
 }
@@ -70,7 +73,7 @@ func (d *diContainer) OrderPaidConsumer() wrappedKafka.Consumer {
 		d.orderPaidConsumer = wrappedKafkaConsumer.NewConsumer(
 			d.ConsumerGroup(),
 			[]string{
-				config.AppConfig().OrderAssemblyProducer.Topic(),
+				config.AppConfig().OrderPaidConsumer.Topic(),
 			},
 			logger.Logger(),
 			kafkaMiddleware.Logging(logger.Logger()),
@@ -84,7 +87,7 @@ func (d *diContainer) ConsumerGroup() sarama.ConsumerGroup {
 		consumerGroup, err := sarama.NewConsumerGroup(
 			config.AppConfig().Kafka.Brokers(),
 			config.AppConfig().OrderPaidConsumer.GroupID(),
-			config.AppConfig().OrderAssemblyProducer.Config(),
+			config.AppConfig().OrderPaidConsumer.Config(),
 		)
 		if err != nil {
 			panic(fmt.Sprintf("failed to create consumer group: %s\n", err.Error()))
@@ -108,7 +111,15 @@ func (d *diContainer) OrderAssemblyDecoder() kafkaConverter.AssemblyDecoder {
 
 func (d *diContainer) OrderConsumerService() service.ConsumerService {
 	if d.orderConsumerService == nil{
-		d.orderConsumerService = orderconsumer.NewService(d.OrderPaidConsumer(), d.OrderAssemblyDecoder())
+		d.orderConsumerService = orderconsumer.NewService(d.OrderPaidConsumer(), 
+		d.OrderAssemblyDecoder(), d.OrderAssemblyProducer())
 	}
 	return d.orderConsumerService
+}
+
+func (d *diContainer) OrderProducerService() service.AssemblyProducerService {
+	if d.orderProducerService == nil{
+		d.orderProducerService = orderProducer.NewService(d.OrderAssemblyProducer())
+	}
+	return d.orderProducerService
 }

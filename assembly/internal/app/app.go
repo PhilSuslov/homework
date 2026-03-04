@@ -2,11 +2,14 @@ package app
 
 import (
 	"context"
+	"math/rand/v2"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/PhilSuslov/homework/assembly/internal/config"
+	"github.com/PhilSuslov/homework/assembly/internal/model"
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
 )
@@ -35,6 +38,12 @@ func (a *App) Run(ctx context.Context) error {
 	go func() {
 		if err := a.runConsumer(ctx); err != nil {
 			errCh <- errors.Errorf("consumer crashed: %v", err)
+		}
+	}()
+
+		go func() {
+		if err := a.runProducer(ctx); err != nil {
+			errCh <- errors.Errorf("Producer crashed: %v", err)
 		}
 	}()
 
@@ -92,3 +101,21 @@ func (a *App) runConsumer(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (a *App) runProducer(ctx context.Context) error {
+	logger.Info(ctx, "🚀 Assembly Kafka Producer running")
+
+	event := model.ShipAssembled{
+		Event_uuid: uuid.NewString(),
+		Order_uuid: uuid.NewString(),
+		User_uuid: uuid.NewString(),
+		Build_time_sec: rand.Int64(),
+	}
+
+	err := a.diContainer.OrderProducerService().ProducerAssembledRecorded(ctx, event)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

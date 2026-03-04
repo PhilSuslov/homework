@@ -3,9 +3,12 @@ package orderconsumer
 import (
 	"context"
 
+	"github.com/PhilSuslov/homework/assembly/internal/model"
 	kafka "github.com/PhilSuslov/homework/platform/pkg/kafka/consumer"
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
+	events_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/events/v1"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 )
 
 func (s *service) AssemblyHandler(ctx context.Context, msg kafka.Message) error {
@@ -22,5 +25,23 @@ func (s *service) AssemblyHandler(ctx context.Context, msg kafka.Message) error 
 		zap.Int64("Build_time_sec", event.Build_time_sec),
 	)
 
-	return nil
+	assembled := model.ShipAssembled{
+		Event_uuid:     event.Event_uuid,
+		Order_uuid:     event.Order_uuid,
+		User_uuid:      event.User_uuid,
+		Build_time_sec: event.Build_time_sec,
+	}
+
+	payload, err := proto.Marshal(&events_v1.ShipAssembled{
+		EventUuid:    assembled.Event_uuid,
+		OrderUuid:    assembled.Order_uuid,
+		UserUuid:     assembled.User_uuid,
+		BuildTimeSec: assembled.Build_time_sec,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return s.assemblyProducer.Send(ctx, []byte(assembled.Event_uuid), payload)
 }

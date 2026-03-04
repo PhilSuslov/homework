@@ -38,6 +38,7 @@ func main() {
 		logger.Error(appCtx, "❌ Ошибка при работе приложения Assembly", zap.Error(err))
 		return
 	}
+
 }
 
 func gracefulShutdown() {

@@ -87,7 +87,10 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *model.CreateOrd
 
 	log.Printf("Нет ошибки в OrderProducerService")
 
-
+	// if err := telegramService.SendUFONotification(ctx, uuid, info); err != nil {
+	// 	return "", err
+	// }
+	
 	return model.CreateOrderResponse{
 		OrderUUID:  order.OrderUUID,
 		TotalPrice: total_price,
