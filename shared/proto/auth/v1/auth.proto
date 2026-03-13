@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/PhilSuslov/homework/shared/pkg/proto/auth/v1;auth_v1";
+
+// Сессия кэша в Redis
+message Session {
+  string uuid = 1; // Уникальный идентификатор события (для идемпотентности)
+  string user = 2; // Идентификатор пользователя
+  google.protobuf.Timestamp created_at = 3; // Дата создания сессии
+  google.protobuf.Timestamp updated_at = 4; // Дата обновления сессии
+  google.protobuf.Timestamp deleted_at = 5; // Дата удаления сессии
+}
+
+// Запрос на авторизацию
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+// Ответ на авторизацию
+message LoginResponser {
+  string session_uuid = 1;
+}
+
+// Запрос метода Whoami
+message WhoamiRequest {
+  string session_uuid = 1; // Идентификатор сессии
+}
+
+// Ответ на метод Whoami
+message WhoamiResponser {
+  string user_uuid = 1; // UUID пользователя
+  string login = 2; // Логин пользователя
+  string email = 3; //Email пользователя
+}
+
+// InventoryService
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponser);
+  rpc Whoami(WhoamiRequest) returns (WhoamiResponser);
+}

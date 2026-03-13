@@ -7,7 +7,7 @@ tags:
   - name: Orders
     description: Операции с заказами — получение и обновлен
 paths:
-  /api/v1/order/:
+  /api/v1/order:
     post:
       summary: Create Order
       operationId: CreateOrder
@@ -44,7 +44,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/generic_error'
-  /api/v1/order/{order_uuid}/:
+  /api/v1/order/{order_uuid}:
     get:
       summary: Get order by UUID
       operationId: GetOrderByUUID
@@ -52,6 +52,7 @@ paths:
         - Orders
       parameters:
         - $ref: '#/components/parameters/order_uuid'
+        - $ref: '#/components/parameters/session_uuid'
       responses:
         '200':
           description: Order retrived successfully
@@ -91,6 +92,7 @@ paths:
         - Orders
       parameters:
         - $ref: '#/components/parameters/order_uuid'
+        - $ref: '#/components/parameters/session_uuid'
       requestBody:
         required: true
         content:
@@ -136,6 +138,7 @@ paths:
         - Orders
       parameters:
         - $ref: '#/components/parameters/order_uuid'
+        - $ref: '#/components/parameters/session_uuid'
       responses:
         '204':
           description: Order successfully cancelled
@@ -344,6 +347,14 @@ components:
         type: string
         format: uuid
         example: 0886799f-5898-4236-93e8-ba41f239d825
+    session_uuid:
+      name: X-Session-Uuid
+      in: header
+      required: true
+      description: UUID сессии пользователя для аутентификации
+      schema:
+        type: string
+        format: uuid
 x-ogen:
   target: ./pkg/openapi/order/v1
   package: order_v1
