@@ -11,6 +11,8 @@ import (
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
 	"github.com/PhilSuslov/homework/platform/pkg/grpc/health"
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
+	authGRPC "github.com/PhilSuslov/homework/platform/pkg/middleware/grpc"
+	authV1 "github.com/PhilSuslov/homework/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
 
 	"google.golang.org/grpc"
@@ -36,7 +38,7 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
-	if err := a.diContainer.InitFakeData(ctx); err != nil{
+	if err := a.diContainer.InitFakeData(ctx); err != nil {
 		log.Printf("Failed to init fake data: %v", err)
 		return err
 	}
@@ -95,21 +97,41 @@ func (a *App) initListener(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	// --- Создаем gRPC клиента для AuthService ---
+	authClientConn, err := grpc.NewClient(config.AppConfig().IamGRPC.Address(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Printf("Failed to dial AuthService: %v", err)
+		return err
+	}
+	authClient := authV1.NewAuthServiceClient(authClientConn)
+
+	// --- Создаем interceptor ---
+	authInterceptor := authGRPC.NewAuthInterceptor(authClient)
+
+	// --- Создаем gRPC сервер с interceptor ---
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
+	)
+
+	// --- Добавляем graceful shutdown ---
 	closer.AddNamed("gRPC server", func(ctx context.Context) error {
 		a.grpcServer.GracefulStop()
 		return nil
 	})
 
+	// --- Reflection и Health ---
 	reflection.Register(a.grpcServer)
 	health.RegisterService(a.grpcServer)
 
-	srv, err  := a.diContainer.InventoryV1API(ctx)
-	if err != nil{
-		log.Printf("Failed to a.diContainer.InventoryV1API(ctx): %v", err)
+	// --- Регистрируем InventoryService ---
+	srv, err := a.diContainer.InventoryV1API(ctx)
+	if err != nil {
+		log.Printf("Failed to get InventoryV1API: %v", err)
 		return err
 	}
 	inventoryV1.RegisterInventoryServiceServer(a.grpcServer, srv)
+
 	return nil
 }
 

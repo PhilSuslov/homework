@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -30,10 +31,10 @@ func (r *IAMRepo) Create(ctx context.Context, user orderRepoModel.UserRedis) (st
 	}
 	if len(user.Notification_methods) == 0 {
 		providerName := "telegram"
-		user.Notification_methods[0] = orderRepoModel.NotificationMethods{
+		user.Notification_methods = append(user.Notification_methods, orderRepoModel.NotificationMethods{
 			ProviderName: &providerName,
 			Target:       &user.Email,
-		}
+		})
 	}
 
 	// Проверка соединения
@@ -42,11 +43,15 @@ func (r *IAMRepo) Create(ctx context.Context, user orderRepoModel.UserRedis) (st
 	}
 
 	// Конвертируем массив UUID для pgx
+	notifBytes, err := json.Marshal(user.Notification_methods)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal notification methods: %w", err)
+	}
 
 	res, err := r.conn.Exec(ctx, `
-        INSERT INTO iam (user_uuid, login, email, notification_method)
-        VALUES ($1, $2, $3, $4)
-    `, user.User_uuid, user.Login, user.Email, user.Notification_methods)
+        INSERT INTO iam (user_uuid, login, password, email, notification_methods)
+        VALUES ($1, $2, $3, $4, $5)`,
+		user.User_uuid, user.Login, user.Password, user.Email, notifBytes)
 
 	if err != nil {
 		return "", fmt.Errorf("failed to create order: %w", err)

@@ -9,6 +9,8 @@ import (
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
 	"go.uber.org/zap"
+	authGRPC "github.com/PhilSuslov/homework/platform/pkg/middleware/grpc"
+
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -21,6 +23,8 @@ func (s *OrderService) CreateOrder(ctx context.Context, request *model.CreateOrd
 			zap.String("UserUUID", request.UserUUID.String()))
 		return model.CreateOrderResponse{}, status.Errorf(codes.Internal, "inventory error")
 	}
+
+	ctx = authGRPC.ForwardSessionUUIDToGRPC(ctx)
 
 	strUUID := make([]string, len(request.PartUuids))
 	for i, v := range request.PartUuids {

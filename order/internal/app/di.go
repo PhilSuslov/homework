@@ -16,8 +16,10 @@ import (
 	"github.com/PhilSuslov/homework/order/internal/service"
 	orderProducer "github.com/PhilSuslov/homework/order/internal/service/producer/order_producer"
 
+	iamClient "github.com/PhilSuslov/homework/order/internal/client/grpc/iam/v1"
 	inventoryClient "github.com/PhilSuslov/homework/order/internal/client/grpc/inventory/v1"
 	paymentClient "github.com/PhilSuslov/homework/order/internal/client/grpc/payment/v1"
+
 	kafkaConverter "github.com/PhilSuslov/homework/order/internal/converter/kafka"
 	"github.com/PhilSuslov/homework/order/internal/converter/kafka/decode"
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
@@ -33,13 +35,18 @@ import (
 	orderRepo "github.com/PhilSuslov/homework/order/internal/repository/order"
 
 	orderService "github.com/PhilSuslov/homework/order/internal/service/order"
+	auth_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/auth/v1"
+	user_v1 "github.com/PhilSuslov/homework/shared/pkg/proto/common/v1"
 )
 
 type diContainer struct {
 	orderService    service.OrderService
 	orderRepository repository.OrderRepository
+
 	inventoryClient inventoryV1.InventoryServiceClient
 	paymentClient   paymentV1.PaymentServiceClient
+	authClient      auth_v1.AuthServiceClient
+	userClient      user_v1.UserServiceClient
 
 	postgresConn *pgxpool.Pool
 
@@ -68,14 +75,37 @@ func NewDiContainer(ctx context.Context) *diContainer {
 		return d
 	}
 
+	authClient, authConn, err := iamClient.NewAuthClient()
+	if err != nil {
+		logger.Error(ctx, "failed to NewAuthClient", zap.Error(err))
+		return d
+	}
+
+	userClient, userConn, err := iamClient.NewUserClient()
+	if err != nil {
+		logger.Error(ctx, "failed to NewUserClient", zap.Error(err))
+		return d
+	}
+
 	d.inventoryClient = invClient
 	d.paymentClient = payClient
+	d.authClient = authClient
+	d.userClient = userClient
 
 	closer.AddNamed("Inventory gRPC conn", func(ctx context.Context) error {
 		return invConn.Close()
 	})
+
 	closer.AddNamed("Payment gRPC conn", func(ctx context.Context) error {
 		return payConn.Close()
+	})
+
+	closer.AddNamed("Auth gRPC conn", func(ctx context.Context) error {
+		return authConn.Close()
+	})
+
+	closer.AddNamed("User gRPC conn", func(ctx context.Context) error {
+		return userConn.Close()
 	})
 
 	return d
@@ -84,6 +114,7 @@ func NewDiContainer(ctx context.Context) *diContainer {
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
 		d.orderService = orderService.NewOrderService(d.inventoryClient, d.paymentClient,
+			d.authClient, d.userClient,
 			d.OrderProducerService(ctx), d.OrderRepository(ctx))
 	}
 	return d.orderService

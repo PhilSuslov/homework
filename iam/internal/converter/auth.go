@@ -7,8 +7,8 @@ import (
 
 )
 
-func StringToLoginResponse(in model.Session) model.LoginResponse {
-	return model.LoginResponse{in.Uuid}
+func StringToLoginResponse(in string) model.LoginResponse {
+	return model.LoginResponse{in}
 }
 
 func UserAuthToWhoamiResponse(in model.Session) *model.WhoamiResponse{

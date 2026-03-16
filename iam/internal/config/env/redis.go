@@ -17,11 +17,11 @@ IAM_REDIS_IDLE_TIMEOUT=10s
 */
 
 type redisEnvConfig struct {
-	Host string `env:"IAM_REDIS_HOST,required"`
-	Port string `env:"IAM_REDIS_PORT,required"`
-	ConnectionTimeout time.Duration `env:"IAM_REDIS_CONNECTION_TIMEOUT,required"`
-	MaxIdle int `env:"IAM_REDIS_MAX_IDLE,required"`
-	IdleTimeout time.Duration `env:"IAM_REDIS_IDLE_TIMEOUT,required"`
+	Host string `env:"REDIS_HOST,required"`
+	Port string `env:"REDIS_PORT,required"`
+	ConnectionTimeout time.Duration `env:"REDIS_CONNECTION_TIMEOUT,required"`
+	MaxIdle int `env:"REDIS_MAX_IDLE,required"`
+	IdleTimeout time.Duration `env:"REDIS_IDLE_TIMEOUT,required"`
 }
 
 type redisConfig struct {

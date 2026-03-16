@@ -22,6 +22,7 @@ func (r Repository) getCacheKey(uuid string) string {
 
 func (r *Repository) Get(ctx context.Context, uuid string) (model.Session, error) {
 	cacheKey := r.getCacheKey(uuid)
+	fmt.Println("Get -> session ",cacheKey)
 
 	values, err := r.cache.HGetAll(ctx, cacheKey)
 	if err != nil {
@@ -30,6 +31,8 @@ func (r *Repository) Get(ctx context.Context, uuid string) (model.Session, error
 		}
 		return model.Session{}, err
 	}
+	fmt.Println("Session -> Get -> Values...:")
+	fmt.Println(values...)
 
 	if len(values) == 0 {
 		return model.Session{}, model.ErrSessionNotFound
@@ -41,9 +44,6 @@ func (r *Repository) Get(ctx context.Context, uuid string) (model.Session, error
 		return model.Session{}, err
 	}
 
+	fmt.Println("Session -> Get -> sessionRedisView: ",sessionRedisView)
 	return repoConverter.SessionFromRedis(sessionRedisView), nil
 }
-
-// func (r *Repository) GetByEmail(ctx context.Context, email string) (string, error) {
-// 	
-// }

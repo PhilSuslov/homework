@@ -13,11 +13,14 @@ import (
 	"github.com/PhilSuslov/homework/inventory/internal/service"
 	partService "github.com/PhilSuslov/homework/inventory/internal/service/part"
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
+	authV1 "github.com/PhilSuslov/homework/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/PhilSuslov/homework/shared/pkg/proto/inventory/v1"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"google.golang.org/grpc"
 )
 
 type diContainer struct {
@@ -27,6 +30,9 @@ type diContainer struct {
 
 	mongoDBClient *mongo.Client
 	mongoDBHandle *mongo.Database
+
+	authConn   *grpc.ClientConn
+	authClient authV1.AuthServiceClient
 
 	mu   sync.Mutex
 	once sync.Once
@@ -78,7 +84,7 @@ func (d *diContainer) MongoDBHandle(ctx context.Context) (*mongo.Database, error
 	// Создаем индексы
 	collection := d.mongoDBHandle.Collection("note")
 	fmt.Printf("Inserting fake note with UUID: %s\n", collection.Name())
-		indexModels := []mongo.IndexModel{
+	indexModels := []mongo.IndexModel{
 		{
 			Keys:    bson.D{{Key: "body.name", Value: 1}},
 			Options: options.Index().SetUnique(false),
@@ -172,4 +178,24 @@ func (d *diContainer) InitFakeData(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (d *diContainer) AuthClient(ctx context.Context) (authV1.AuthServiceClient, error) {
+	if d.authClient != nil {
+		return d.authClient, nil
+	}
+
+	conn, err := grpc.NewClient(config.AppConfig().IamGRPC.Address())
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to AuthService: %w", err)
+	}
+
+	d.authConn = conn
+	d.authClient = authV1.NewAuthServiceClient(conn)
+
+	closer.AddNamed("AuthService gRPC conn", func(ctx context.Context) error {
+		return d.authConn.Close()
+	})
+
+	return d.authClient, nil
 }

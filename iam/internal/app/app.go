@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	userV1 "github.com/PhilSuslov/homework/shared/pkg/proto/common/v1"
+	authV1 "github.com/PhilSuslov/homework/shared/pkg/proto/auth/v1"
+	
 )
 
 type App struct {
@@ -107,6 +109,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	health.RegisterService(a.grpcServer)
 
 	userV1.RegisterUserServiceServer(a.grpcServer, a.diContainer.UserAuthV1API(ctx))
+	authV1.RegisterAuthServiceServer(a.grpcServer, a.diContainer.AuthV1API(ctx))
 
 	return nil
 }

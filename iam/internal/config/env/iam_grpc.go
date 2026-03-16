@@ -7,8 +7,8 @@ import (
 )
 
 type iamGRPCEnvConfig struct {
-	Host string `env:"IAM_GRPC_HOST,required"`
-	Port string `env:"IAM_GRPC_PORT,required"`
+	Host string `env:"GRPC_HOST,required"`
+	Port string `env:"GRPC_PORT,required"`
 }
 
 type IAMGRPCConfig struct {

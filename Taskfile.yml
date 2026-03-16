@@ -466,7 +466,7 @@ tasks:
         USER_PASSWORD="SecurePassword123!"
         
         echo "📝 Тест 1: Регистрация пользователя"
-        REGISTER_RESPONSE=$({{.GRPCURL}} -plaintext -d "{\"info\":{\"info\":{\"email\":\"$USER_EMAIL\",\"login\":\"$USER_EMAIL\"},\"password\":\"$USER_PASSWORD\"}}" localhost:50053 user.v1.UserService/Register)
+        REGISTER_RESPONSE=$({{.GRPCURL}} -plaintext \-d "{\"user\":{\"email\":\"$USER_EMAIL\",\"login\":\"$USER_EMAIL\",\"password\":\"$USER_PASSWORD\"}}" \localhost:50053 common.v1.UserService/Register)
         
         if [[ -z "$REGISTER_RESPONSE" || "$REGISTER_RESPONSE" == *"error"* ]]; then
           echo "❌ Не удалось зарегистрировать пользователя."
@@ -475,7 +475,7 @@ tasks:
         fi
         
         # Извлекаем UUID пользователя
-        USER_UUID=$(echo $REGISTER_RESPONSE | grep -o '"userUuid": "[^"]*' | cut -d'"' -f4)
+        USER_UUID=$(echo $REGISTER_RESPONSE | grep -o '"uuid": "[^"]*' | cut -d'"' -f4)
         if [ -z "$USER_UUID" ]; then
           echo "❌ Не удалось извлечь UUID пользователя из ответа регистрации."
           echo "🔍 Ответ сервера: $REGISTER_RESPONSE"

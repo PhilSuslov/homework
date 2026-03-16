@@ -15,9 +15,11 @@ import (
 	orderProducer "github.com/PhilSuslov/homework/order/internal/service/producer/order_producer"
 	"github.com/PhilSuslov/homework/platform/pkg/closer"
 	"github.com/PhilSuslov/homework/platform/pkg/logger"
+	authHTTP "github.com/PhilSuslov/homework/platform/pkg/middleware/http"
 	"go.uber.org/zap"
 
 	orderAPI "github.com/PhilSuslov/homework/order/internal/api/order/v1"
+	iamClientInv "github.com/PhilSuslov/homework/order/internal/client/grpc/iam/v1"
 	orderClientInv "github.com/PhilSuslov/homework/order/internal/client/grpc/inventory/v1"
 	orderClientPay "github.com/PhilSuslov/homework/order/internal/client/grpc/payment/v1"
 	orderRepo "github.com/PhilSuslov/homework/order/internal/repository/order"
@@ -34,6 +36,8 @@ type App struct {
 
 	payConn       *grpc.ClientConn
 	inventoryConn *grpc.ClientConn
+	authConn      *grpc.ClientConn
+	userConn      *grpc.ClientConn
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -112,6 +116,16 @@ func (a *App) initApp(ctx context.Context) error {
 		return err
 	}
 
+	authClient, authConn, err := iamClientInv.NewAuthClient()
+	if err != nil {
+		return err
+	}
+
+	userClient, userConn, err := iamClientInv.NewUserClient()
+	if err != nil {
+		return err
+	}
+
 	// --- producer ---
 	producer := orderProducer.NewService(a.diContainer.OrderPaidProducer())
 
@@ -119,7 +133,7 @@ func (a *App) initApp(ctx context.Context) error {
 	repo := orderRepo.NewOrderRepo(a.diContainer.postgresConn)
 
 	// --- service ---
-	orderSvc := orderService.NewOrderService(inventoryClient, paymentClient, producer, repo)
+	orderSvc := orderService.NewOrderService(inventoryClient, paymentClient, authClient, userClient, producer, repo)
 
 	// --- handler ---
 	handler := orderAPI.NewOrderHandler(orderSvc)
@@ -130,13 +144,18 @@ func (a *App) initApp(ctx context.Context) error {
 		return err
 	}
 
+	authMiddleware := authHTTP.NewAuthMiddleware(authClient)
+	handlerWithMiddleware := loggerMiddleware(authMiddleware.Handle(ogenServer))
+
 	a.httpServer = &http.Server{
 		Addr:    config.AppConfig().OrderHTTP.Address(),
-		Handler: loggerMiddleware(ogenServer),
+		Handler: handlerWithMiddleware,
 	}
 
 	a.payConn = payConn
 	a.inventoryConn = invConn
+	a.authConn = authConn
+	a.userConn = userConn
 
 	// Регистрируем graceful shutdown для всех ресурсов
 	closer.AddNamed("HTTP server", func(ctx context.Context) error {
@@ -151,6 +170,14 @@ func (a *App) initApp(ctx context.Context) error {
 
 	closer.AddNamed("Inventory GRPC conn", func(ctx context.Context) error {
 		return a.inventoryConn.Close()
+	})
+
+	closer.AddNamed("Auth GRPC conn", func(ctx context.Context) error {
+		return a.authConn.Close()
+	})
+
+	closer.AddNamed("User GRPC conn", func(ctx context.Context) error {
+		return a.userConn.Close()
 	})
 
 	return nil

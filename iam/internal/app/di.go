@@ -61,7 +61,7 @@ func (d *diContainer) UserAuthV1API(ctx context.Context) userV1.UserServiceServe
 
 func (d *diContainer) PartAuthService(ctx context.Context) service.AuthService {
 	if d.authService == nil {
-		d.authService = serviceAuth.NewService(d.PartAuthRepo(ctx))
+		d.authService = serviceAuth.NewService(d.PartAuthRepo(ctx), d.PartUserRepo(ctx))
 	}
 	return d.authService
 }
@@ -114,7 +114,7 @@ func (d *diContainer) PostgresPool(ctx context.Context) *pgxpool.Pool {
 		return d.postgresConn
 	}
 
-	conn, err := pgxpool.New(ctx, "postgres://demo:demo@localhost:5435/orders?sslmode=disable")
+	conn, err := pgxpool.New(ctx, "postgres://iam_user:iam_password@localhost:5444/iam?sslmode=disable")
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}

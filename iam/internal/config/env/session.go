@@ -7,7 +7,7 @@ import (
 )
 
 type sessionEnvConfig struct {
-	CacheTTL time.Duration `env:"IAM_SESSION_TTL,required"`
+	CacheTTL time.Duration `env:"SESSION_TTL,required"`
 }
 
 type sessionConfig struct {

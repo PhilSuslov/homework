@@ -15,6 +15,10 @@ type paymentGRPCConfig interface {
 	Address() string
 }
 
+type iamGRPCConfig interface {
+	Address() string
+}
+
 type PostgresConfig interface {
 	URI() string
 	DatabaseName() string

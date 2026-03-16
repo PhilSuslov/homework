@@ -15,11 +15,9 @@ func NewClient(bot *bot.Bot) *client {
 }
 
 func (c *client) SendMessage(ctx context.Context, chatID int64, text string) error {
-	// text = escapeMarkdownV2(text)
 	_, err := c.bot.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: chatID,
 		Text:   text,
-		// ParseMode: "MarkdownV2",
 	})
 
 	if err != nil {
@@ -28,11 +26,3 @@ func (c *client) SendMessage(ctx context.Context, chatID int64, text string) err
 
 	return nil
 }
-
-// func escapeMarkdownV2(s string) string {
-// 	special := []string{"_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!"}
-// 	for _, ch := range special {
-// 		s = strings.ReplaceAll(s, ch, `\`+ch)
-// 	}
-// 	return s
-// }

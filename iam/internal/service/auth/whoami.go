@@ -2,21 +2,21 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	conv "github.com/PhilSuslov/homework/iam/internal/converter"
 	"github.com/PhilSuslov/homework/iam/internal/model"
 )
 
 func (s *Service) Whoami(ctx context.Context, req model.WhoamiRequest) (*model.WhoamiResponse, error) {
-	session, err := s.repo.Get(ctx, req.SessionUuid)
+	fmt.Println("Service -> auth -> whoami: ",req.SessionUuid)
+	session, err := s.redisRepo.Get(ctx, req.SessionUuid)
+	fmt.Println(session, err)
 	if err != nil {
 		return nil, model.ErrSessionNotFound
 	}
 
-	user, err := s.repo.Get(ctx, session.User.User_uuid)
-	if err != nil {
-		return nil, err
-	}
+	fmt.Println("Service -> auth -> whoami -> session.conv: ", conv.UserAuthToWhoamiResponse(session))
 
-	return conv.UserAuthToWhoamiResponse(user), err
+	return conv.UserAuthToWhoamiResponse(session), err
 }
